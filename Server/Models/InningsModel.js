@@ -1,0 +1,67 @@
+const mongoose=require('mongoose');
+
+const inningsSchema=mongoose.Schema({
+    match_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Match',
+        required:true   
+    },
+    battingTeam:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Team',
+        required:true
+    },
+    bowlingTeam:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Team',
+        required:true
+    },
+    Runs:{
+        type:Number,
+        default:0
+    },
+    Wickets:{
+        type:Number,
+        default:0
+    },
+    Overs:{
+        type:Number,
+        default:0
+    },
+    Balls:{
+        type:Number,
+        default:0
+    },
+    Extras:{
+        type:Number,
+        default:0
+    },
+    runRate:{
+        type:Number,
+        default:0
+    },
+    requiredRunRate:{
+        type:Number,
+        default:0
+    },
+    BattingScorecard:[
+        {
+            type:Schema.Types.ObjectId,
+            ref:'BattingScore',
+            required:true
+        }
+    ],
+    BowlingScorecard:[
+        {
+            type:Schema.Types.ObjectId,
+            ref:'BowlingScore',
+            required:true
+        }
+    ]
+},
+{
+    timestamps:true
+});
+
+const InningsModel=mongoose.model('Innings',inningsSchema);
+module.exports=InningsModel;

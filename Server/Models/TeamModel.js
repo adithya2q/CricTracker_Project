@@ -14,9 +14,9 @@ const TeamSchema=mongoose.Schema({
         ref:'Player',
         required:true
     },
-    team_coach:{
+    team_manager:{
         type:Schema.Types.ObjectId,
-        ref:'Coach',
+        ref:'TeamManager',
         required:true
     },
     team_players:[{
@@ -28,6 +28,14 @@ const TeamSchema=mongoose.Schema({
         type:Schema.Types.ObjectId,
         ref:'Venue',
         required:true
+    },
+    team_description:{
+        type:String,
+        required:true
+    },
+    team_trophies_won:{
+        type:Number,
+        default:0
     }
 })
 

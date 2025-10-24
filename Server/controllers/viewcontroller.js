@@ -1,3 +1,8 @@
+const { get } = require("mongoose");
+const TeamModel = require("../Models/TeamModel");
+const TournamentModel = require("../Models/TournamentModel");
+const PlayerModel = require("../Models/PlayerModel");
+
 module.exports={
     getMatches:async(req,res)=>{
         try{
@@ -85,6 +90,38 @@ module.exports={
             })
         }
     },
+
+    getTeams:async(req,res)=>{
+        try{
+            const teams=await TeamModel.find({isDeleted:false}).lean();
+            if(!teams){
+                return res.status(404).json({
+                    success:false,
+                    status:404,
+                    message:"Teams not found",
+                    data:[]
+                })
+            }
+            else{
+                return res.status(200).json({
+                    success:true,
+                    status:200,
+                    message:"Teams found",
+                    data:teams
+                })
+            }
+        }
+        catch(error){
+            return res.status(500).json({
+                success:false,
+                status:500,
+                message:"Internal server error",
+                error:error.message
+            })
+
+
+        }
+    },
     getTeamDetails:async(req,res)=>{
         try {
         const {id}=req.params;
@@ -114,6 +151,36 @@ module.exports={
                 error:error.message
             })
             
+        }
+    },
+    getPlayers:async(req,res)=>{
+        try{
+            const players=await PlayerModel.find({isDeleted:false}).lean();
+            if(!players){
+                return res.status(404).json({
+                    success:false,
+                    status:404,
+                    message:"Players not found",
+                    data:[]
+                })
+            }
+            else{
+                return res.status(200).json({
+                    success:true,
+                    status:200,
+                    message:"Players found",
+                    data:players
+                })
+            }
+
+        }
+        catch(error){
+            return res.status(500).json({
+                success:false,
+                status:500,
+                message:"Internal server error",
+                error:error.message
+            })
         }
     },
     getPlayerDetails:async(req,res)=>{
@@ -147,5 +214,65 @@ module.exports={
         }
  
 
+    },
+    getTournaments:async(req,res)=>{
+        try{
+            const tournaments=await TournamentModel.find({isDeleted:false}).lean();
+            if(!tournaments){
+                return res.status(404).json({
+                    success:false,
+                    status:404,
+                    message:"Tournaments not found",
+                    data:[]
+                })
+            }
+            else{
+                return res.status(200).json({
+                    success:true,
+                    status:200,
+                    message:"Tournaments found",
+                    data:tournaments
+                })
+            }
+        }
+        catch(error){
+            return res.status(500).json({
+                success:false,
+                status:500,
+                message:"Internal server error",
+                error:error.message
+            })
+        
+        }
+    },
+
+    getTournamentDetails:async(req,res)=>{
+        try {
+            const {id}=req.params;
+            const tournament=await TournamentModel.findById(id).lean();
+            if(!tournament){
+                return res.status(404).json({
+                    success:false,
+                    status:404,
+                    message:"Tournament not found",
+                    data:tournament
+                });
+            }
+            else{
+                return res.status(200).json({
+                    success:true,
+                    status:200,
+                    message:"Tournament found",
+                    data:tournament
+                });
+            }
+        } catch (error) {
+            return res.status(500).json({
+                success:false,
+                status:500,
+                message:"Internal server error",
+                error:error.message
+            });
+        }
     }
 }

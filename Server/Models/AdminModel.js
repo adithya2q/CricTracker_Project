@@ -1,6 +1,6 @@
 const mongoose=require('mongoose');
 
-const ViewerSchema=mongoose.Schema({
+const AdminSchema=mongoose.Schema({
     name:{
         type:String,
         required:true
@@ -17,10 +17,10 @@ const ViewerSchema=mongoose.Schema({
         type:String,
         required:true
     }
-
-},{
+},
+{
     timestamps:true
 });
 
-const ViewerModel=mongoose.model('Viewer',ViewerSchema);
-module.exports=ViewerModel;
+const AdminModel=mongoose.model('Official',AdminSchema);
+module.exports=AdminModel;

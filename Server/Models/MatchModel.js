@@ -11,10 +11,22 @@ const MatchSchema=mongoose.Schema({
         ref:'Team',
         required:true
     },
-    Match_type:{
+    Match_type:{    
         type:String,
-        enum:['T20','ODI','Test','T10'],
+        enum:['T20I','ODI','Test','Domestic'],
         required:true
+    },
+    match_category: {
+        type: String,
+        enum: ['tournament', 'friendly'],
+        required: true
+    },
+    tournament: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tournament',
+        required: function() {
+        return this.match_category === 'tournament';
+        }
     },
     venue:{
         type:String,

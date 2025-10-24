@@ -1,13 +1,76 @@
 const mongoose=require('mongoose');
 
+
+const StatisticsSchema=mongoose.Schema({
+        matches_played:{
+            type:Number,
+            required:true
+        },
+        Innings_played:{
+            type:Number,
+            required:true
+        },    
+         runs_scored:{
+            type:Number,
+        },
+        wickets_taken:{
+            type:Number,
+        },
+        highest_score:{
+            type:Number,
+        },
+        batting_average:{
+            type:Number,
+        },
+        strike_rate:{
+            type:Number,
+        },
+        economy_rate:{
+            type:Number,
+        },
+        bowling_average:{
+            type:Number,
+        },
+        best_bowling_figure:{
+            type:String,
+        },
+        five_wickets:{
+            type:Number,
+        },
+        ten_wickets:{
+            type:Number,
+        },
+        centuries:{
+            type:Number,
+        },
+        half_centuries:{
+            type:Number,
+        },
+        fours:{
+            type:Number,
+        },
+        sixes:{
+            type:Number,
+
+        },
+        catches:{
+            type:Number,
+        },
+        run_outs:{
+            type:Number,
+        },
+        stumpings:{
+            type:Number,
+        }
+})
+
 const PlayerSchema=mongoose.Schema({
     player_name:{
         type:String,
         required:true
     },
-    player_team:{
-        type:Schema.Types.ObjectId,
-        ref:'Team',
+    player_DOB:{
+        type:Date,
         required:true
     },
     player_age:{
@@ -18,32 +81,40 @@ const PlayerSchema=mongoose.Schema({
         type:String,
         required:true
     },
-    player_price:{
-        type:Number,
+    player_batting_style:{
+        type:String,
         required:true
+    },
+    player_bowling_style:{
+        type:String,
+        required:true
+    },
+    player_teams:[{
+        type:Schema.Types.ObjectId,
+        ref:'Team',
+        required:true
+    }],
+    special_status:{
+        type:String,
+        enum:['Captain','ViceCaptain'],
+    },
+    special_team_status:{
+        type:String,
+        enum:['Others','None']
     },
     player_image:{
         type:String,
         required:true
     },
-    statistics:{
-        runs_scored:{
-            type:Number,
-            required:true
-        },
-        wickets_taken:{
-            type:Number,
-            required:true
-        },
-        matches_played:{
-            type:Number,
-            required:true
-        },
-        highest_score:{
-            type:Number,
-            required:true
-        }
+    player_statistics:{
+        T20I:StatisticsSchema,
+        ODI:StatisticsSchema,
+        Test:StatisticsSchema,
+        Domestic_T20:StatisticsSchema,
+        Domestic_ODI:StatisticsSchema,
+        Domestic_Test:StatisticsSchema
     }
+       
 },
 {
     timestamps:true

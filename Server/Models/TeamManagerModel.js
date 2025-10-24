@@ -1,6 +1,7 @@
 const mongoose=require('mongoose');
 
-const OfficialSchema=mongoose.Schema({
+
+const TeamManagerSchema=mongoose.Schema({
     name:{
         type:String,
         required:true
@@ -22,5 +23,5 @@ const OfficialSchema=mongoose.Schema({
     timestamps:true
 });
 
-const OfficialModel=mongoose.model('Official',OfficialSchema);
-module.exports=OfficialModel;
+const TeamManagerModel=mongoose.model('TeamManager',TeamManagerSchema);
+module.exports=TeamManagerModel;

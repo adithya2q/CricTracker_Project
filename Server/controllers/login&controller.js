@@ -1,29 +1,40 @@
-const UserModel = require("../Models/UserModel");
+const ViewerModel = require("../Models/ViewerModel");
+const AdminModel = require("../Models/AdminModel");
+const TeamManagerModel = require("../Models/TeamManagerModel");
+const ScorerModel = require("../Models/ScorerModel");
 const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
+
+const rolemodels={
+    admin:AdminModel,
+    viewer:ViewerModel,
+    teamManager:TeamManagerModel,
+    scorer:ScorerModel
+}
+
 
 module.exports={
     login:async(req,res)=>{
         try{
-            const {email,password}=req.body;
-            if(!email || !password){
+            const {email,password,role}=req.body;
+            if(!email || !password || !role){
                 return res.status(400).json({
                     success:false,
                     status:400,
-                    message:"Please enter email and password"
+                    message:"Please enter email, password and role"
 
                 });
             }
-            if (role==='user'){
-                const userFound=await UserModel.findOne({email:email});
+            const Models=rolemodels[role];
+            const userFound=await Models.findOne({email:email}).lean();
                 if(!userFound){
                     return res.status(400).json({
                         success:false,
                         status:400,
-                        message:"User not found"
+                        message:`${role} not found`
                     });
                 }
-                const isMatch=await bcrypt.compare(password,user.password);
+                const isMatch=await bcrypt.compare(password,userFound.password);
                 if(!isMatch){
                     return res.status(401).json({
                         success:false,
@@ -31,8 +42,8 @@ module.exports={
                         message:"Invalid credentials"
                     });    
                 }
-                delete user.password;
-                const token=jwt.sign({id:userFound._id,role:'user'},process.env.JWT_SECRET);
+                delete userFound.password;
+                const token=jwt.sign({id:userFound._id,role:role},process.env.JWT_SECRET);
                 return res.status(200).json({
                     success:true,
                     status:200,
@@ -40,7 +51,6 @@ module.exports={
                     data:userFound,
                     token:token
                 }) 
-            }   
         }       
      catch(error){   
         return res.status(500).json({
@@ -53,24 +63,24 @@ module.exports={
     },
     UserRegister:async(req,res)=>{
         try{
-            const {name,phone,email,password,confirmPassword}=req.body;
+            const {name,phone,email,password,confirmPassword,role}=req.body;
 
-            // checking for nay missing fields
-            if(!name || !email || !phone || !password || !confirmPassword){
+            // checking for n any missing fields
+            if(!name || !email || !phone || !password || !confirmPassword || !role){
                 return res.status(400).json({
                     success:false,
                     status:400,
                     message:"All fields are required"
                 });
             } ;
-            const existingUser=await UserModel.findOne({email:email}).lean();
-
+            const Models=rolemodels[role];
+           const existingUser=await Models.findOne({email:email}).lean();
             // checking for existing user
             if(existingUser){
                 return res.status(409).json({
                     success:false,
                     status:409,
-                    message:"User already exists"
+                    message:`User already exists for ${role}`
                 });
             }
 
@@ -84,7 +94,7 @@ module.exports={
             }
             
             const encryptedPassword=await bcrypt.hash(password,10);
-            const newUser=new UserModel({name,email,phone,password:encryptedPassword});
+            const newUser=new Models({name,email,phone,password:encryptedPassword});
             await newUser.save();
             return res.status(201).json({
                 success:true,

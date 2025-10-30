@@ -37,19 +37,8 @@ const BattingSchema=mongoose.Schema({
         default:'not_batted'
     },
     Dismissal:{
-        dismissal_type:{
-            type:String,
-            enum:['bowled','caught','lbw','stumped','run_out','hit_wicket','obstructing_field','retired_hurt','retired_out'],
-            default:'not_out'
-        },
-        bowler_id:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'Player',
-        },
-        fielder_id:{
-            type:mongoose.Schema.Types.ObjectId,
-            ref:'Player',
-        }
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Dismissal',
     }
 },
 {

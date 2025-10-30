@@ -1,4 +1,6 @@
 const mongoose=require('mongoose');
+const ExtrasSchema = require('./ExtrasSchema');
+
 
 const inningsSchema=mongoose.Schema({
     match_id:{
@@ -8,12 +10,12 @@ const inningsSchema=mongoose.Schema({
     },
     battingTeam:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Team',
+        ref:'Playing11',
         required:true
     },
     bowlingTeam:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Team',
+        ref:'Playing11',
         required:true
     },
     Runs:{
@@ -33,8 +35,8 @@ const inningsSchema=mongoose.Schema({
         default:0
     },
     Extras:{
-        type:Number,
-        default:0
+        type:ExtrasSchema,
+        default:()=>({})
     },
     runRate:{
         type:Number,
@@ -44,20 +46,32 @@ const inningsSchema=mongoose.Schema({
         type:Number,
         default:0
     },
+    Boundaries:{
+        type:Number,
+        default:0
+    },
+    Sixes:{
+        type:Number,
+        default:0
+    },
     BattingScorecard:[
         {
-            type:Schema.Types.ObjectId,
+            type:mongoose.Schema.Types.ObjectId,
             ref:'BattingScore',
             required:true
         }
     ],
     BowlingScorecard:[
         {
-            type:Schema.Types.ObjectId,
+            type:mongoose.Schema.Types.ObjectId,
             ref:'BowlingScore',
             required:true
         }
-    ]
+    ],
+    isCompleted:{
+        type:Boolean,
+        default:false
+    }
 },
 {
     timestamps:true

@@ -1,4 +1,5 @@
 const mongoose=require('mongoose');
+const DismissalSchema = require('./DismissalModel');
 
 const BowlingSchema=mongoose.Schema({
     innings_id:{
@@ -23,6 +24,10 @@ const BowlingSchema=mongoose.Schema({
         type:Number,
         default:0
     },
+    Balls:{
+        type:Number,
+        default:0
+    },
     Maidens:{
         type:Number,
         default:0
@@ -30,7 +35,19 @@ const BowlingSchema=mongoose.Schema({
     EconomyRate:{
         type:Number,
         default:0
-    }
+    },
+    Extras:{
+        type:ExtrasSchema,
+        default:()=>({})
+    },
+    bowling_status:{
+        type:String,
+        enum:['bowled','not_bowled'],
+        default:'active'
+    },
+    Dismissal:[{       
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Dismissal',}]
 },
 {timestamps:true}
 );

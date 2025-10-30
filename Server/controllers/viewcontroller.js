@@ -274,5 +274,76 @@ module.exports={
                 error:error.message
             });
         }
+    },
+    updateChat:async(req,res)=>{
+        try{
+            const {id}=req.params;
+            const {chat}=req.body;
+            if(!chat){
+                return res.status(404).json({
+                    success:false,
+                    status:404,
+                    message:"Chat not found",
+                    data:chat
+                });
+            }
+            else{
+            const match=await MatchModel.findById(id);
+            match.chat.push(chat);
+            await match.save();
+            if(!match){
+                return res.status(404).json({
+                    success:false,
+                    status:404,
+                    message:"match not found",
+                    data:chat
+                });
+            }
+            else{
+                return res.status(200).json({
+                    success:true,
+                    status:200,
+                    message:"Chat found",
+                    data:chat
+                });
+            }
+        }      
+    }    
+     catch(error){
+            return res.status(500).json({
+                success:false,
+                status:500,
+                message:"Internal server error",
+                error:error.message
+            })
+        }
+    },
+getChat:async(req,res)=>{
+    try {
+        const {id}=req.params;
+        const match=await MatchModel.findById(id).lean();
+        if(!match){
+            return res.status(404).json({
+                success:false,
+                status:404,
+                message:"Chat not found",
+            });
+        }
+        else{
+            return res.status(200).json({
+                success:true,
+                status:200,
+                message:"Chat found",
+                data:match.chat
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success:false,
+            status:500,
+            message:"Internal server error",
+            error:error.message
+        });
+    }
     }
 }

@@ -11,7 +11,17 @@ const MatchSchema=mongoose.Schema({
         ref:'Team',
         required:true
     },
-    Match_type:{    
+    playingXI_team1:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Playing11',
+        required: true
+    },
+    playingXI_team2:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Playing11',
+        required: true
+     },
+    match_type:{    
         type:String,
         enum:['T20I','ODI','Test','Domestic'],
         required:true
@@ -49,6 +59,14 @@ const MatchSchema=mongoose.Schema({
         type:String,
         enum:['bat','field'],
     },
+    BattingFirstTeam:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Team'
+    },
+    BowlingFirstTeam:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Team'
+    },
     matchWinner:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Team'
@@ -58,11 +76,25 @@ const MatchSchema=mongoose.Schema({
         type:[String],
         default:[]
     },
+    Chat:{
+        type:[String],
+        default:[]
+    },
     innings:[{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Inning',
+        ref:'Innings',
         required:true
-    }]
+    }],
+    InningsNumber:{
+        type:Number,
+        default:1
+    },
+    currentInnings: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Inning',
+        default: null
+},
+
 },{
     timestamps:true
 })

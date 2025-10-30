@@ -256,6 +256,23 @@ switchInnings:async(req,res)=>{
             match.innings.push(newInnings._id);
             match.currentInnings=newInnings._id;
             await match.save()
+            for (const player of battingTeam.players) {
+                const currentInnings_batting_scorecard=new BattingScorecardModel({
+                    innings:newInnings._id,
+                    player:player._id,
+                    batting_status:'not_batted'
+                })
+                await currentInnings_batting_scorecard.save();
+            }
+            for (const player of bowlingTeam.players) {
+                const currentInnings_bowling_scorecard=new BowlingScorecardModel({
+                    innings:newInnings._id,
+                    player:player._id,
+                    batting_status:'not_bowled'
+                })
+                await currentInnings_bowling_scorecard.save();
+            }
+
             return res.status(200).json({
                 succes:true,
                 status:200,

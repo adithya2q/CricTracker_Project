@@ -143,6 +143,22 @@ module.exports={
             findMatch.currentInnings=firstInnings._id;
             findMatch.InningsNumber=1;
             await findMatch.save();
+            for (const player of battingFirstTeam.players) {
+                const firstInnings_batting_scorecard=new BattingScorecardModel({
+                    innings:firstInnings._id,
+                    player:player._id,
+                    batting_status:'not_batted'
+                })
+                await firstInnings_batting_scorecard.save();
+            }
+            for (const player of bowlingFirstTeam.players) {
+                const firstInnings_bowling_scorecard=new BowlingScorecardModel({
+                    innings:firstInnings._id,
+                    player:player._id,
+                    batting_status:'not_bowled'
+                })
+                await firstInnings_bowling_scorecard.save();
+            }
             }
 
             const match=await MatchModel.findByIdAndUpdate(id,{$set:updatedFields},{new:true});

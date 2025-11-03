@@ -17,6 +17,11 @@ const TeamManagerSchema=mongoose.Schema({
     password:{
         type:String,
         required:true
+    },
+    team_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Team',
+        required:true
     }
 },
 {

@@ -39,7 +39,27 @@ const BattingSchema=mongoose.Schema({
     Dismissal:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Dismissal',
-    }
+    },
+    bowlers_faced:[{
+        bowler_id:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Player',
+            required:true
+        },
+        runs_scored:{
+            type:Number,
+            default:0
+        },
+        balls_faced:{
+            type:Number,
+            default:0
+        },
+        dismissal:{
+            type:Boolean,
+            default:false
+        }
+    }],
+
 },
 {
     timestamps:true

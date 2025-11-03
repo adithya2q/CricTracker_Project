@@ -21,10 +21,14 @@ const Playing11Schema=mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
          ref: 'Player'
     },
+    viceCaptain: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Player' 
+    },
     wicketKeeper: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Player' 
-    }, 
+    },
 },{
     timestamps:true
 });

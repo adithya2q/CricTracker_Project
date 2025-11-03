@@ -97,7 +97,7 @@ module.exports={
         try{
             const {id}=req.params;
             const updatedFields=req.body;
-            const findMatch=await MatchModel.findById(id);
+            const findMatch=await MatchModel.findById(id).populate('team1').populate('team2');
             if(!findMatch){
                 return res.status(404).json({
                     success:false,
@@ -105,12 +105,51 @@ module.exports={
                     message:"Match not found"
                 });
             }
-            const team1_playing11=await Playing11Model.findOne({team:findMatch.team1})
-                                .populate('players')
-                                .populate('team');
-            const team2_playing11=await Playing11Model.findOne({team:findMatch.team2})
-                                .populate('players')
-                                .populate('team');;
+            if (findMatch.team1.playing11.length!==11){
+                return res.status(400).json({
+                    success:false,
+                    status:400,
+                    message:"Team1 playing11 is not complete"
+                })
+            }
+            if(findMatch.team2.playing11.length!==11){
+                return res.status(400).json({
+                    success:false,
+                    status:400,
+                    message:"Team2 playing11 is not complete"
+                })
+            }
+            const team1_playing11_register=new Playing11Model({
+                team_id:findMatch.team1._id,
+                match_id:id,
+                captain:findMatch.team1.captain,
+                viceCaptain:findMatch.team1.viceCaptain,
+                wicketKeeper:findMatch.team1.wicketKeeper,
+            });
+
+            team1_playing11_register.players.push(...findMatch.team1.playing11.map(player=>player._id));
+            const team2_playing11_register=new Playing11Model({
+                team_id:findMatch.team2._id,
+                match_id:id,
+                captain:findMatch.team2.captain,
+                viceCaptain:findMatch.team2.viceCaptain,
+                wicketKeeper:findMatch.team2.wicketKeeper,
+            })
+
+            team2_playing11_register.players.push(...findMatch.team2.playing11.map(player=>player._id));
+            await Promise.all([
+                team1_playing11_register.save(),
+                team2_playing11_register.save()
+             ]);
+
+            const [team1_playing11, team2_playing11] = await Promise.all([
+            Playing11Model.findOne({ team_id: findMatch.team1._id })
+                .populate('players')
+                .populate('team_id'),
+            Playing11Model.findOne({ team_id: findMatch.team2._id })
+                .populate('players')
+                .populate('team_id')
+            ]);
 
             if(!team1_playing11 || !team2_playing11){
                 return res.status(404).json({
@@ -125,9 +164,9 @@ module.exports={
             if (updatedFields.tossDecision && updatedFields.tossWinner){
                 let battingFirstTeam;
                 if (updatedFields.tossDecision === 'bat') {
-                battingFirstTeam = updatedFields.tossWinner._id.toString()===team1_playing11.team._id.toString()?team1_playing11:team2_playing11;
+                battingFirstTeam = updatedFields.tossWinner._id.toString()===team1_playing11.team_id._id.toString()?team1_playing11:team2_playing11;
                 } else {
-                battingFirstTeam = updatedFields.tossWinner._id.toString() === team1_playing11.team._id.toString() ? team2_playing11: team1_playing11;
+                battingFirstTeam = updatedFields.tossWinner._id.toString() === team1_playing11.team_id._id.toString() ? team2_playing11: team1_playing11;
                 }
                 updatedFields.battingFirstTeam = battingFirstTeam;
                 updatedFields.bowlingFirstTeam = battingFirstTeam === team1_playing11 ? team2_playing11 : team1_playing11;
@@ -155,7 +194,7 @@ module.exports={
                 const firstInnings_bowling_scorecard=new BowlingScorecardModel({
                     innings:firstInnings._id,
                     player:player._id,
-                    batting_status:'not_bowled'
+                    bowling_status:'not_bowled'
                 })
                 await firstInnings_bowling_scorecard.save();
             }

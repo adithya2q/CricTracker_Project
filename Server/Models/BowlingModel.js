@@ -28,6 +28,10 @@ const BowlingSchema=mongoose.Schema({
         type:Number,
         default:0
     },
+    runs_this_over: {
+        type: Number,
+        default: 0
+    },
     Maidens:{
         type:Number,
         default:0

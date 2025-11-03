@@ -14,6 +14,16 @@ const TeamSchema=mongoose.Schema({
         ref:'Player',
         required:true
     },
+    team_ViceCaptain:{
+        type:Schema.Types.ObjectId,
+        ref:'Player',
+        required:true
+    },
+    team_wicketKeeper:{
+        type:Schema.Types.ObjectId,
+        ref:'Player',
+        required:true
+    },  
     team_manager:{
         type:Schema.Types.ObjectId,
         ref:'TeamManager',
@@ -36,7 +46,12 @@ const TeamSchema=mongoose.Schema({
     team_trophies_won:{
         type:Number,
         default:0
-    }
+    },
+    playing11:[{
+        type:Schema.Types.ObjectId,
+        ref:'Player',
+        required:true
+    }]
 })
 
 const TeamModel=mongoose.model('Team',TeamSchema);

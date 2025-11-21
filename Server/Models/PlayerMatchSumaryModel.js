@@ -27,10 +27,13 @@ const PlayerMatchSummarySchema=mongoose.Schema({
         required:true
     },
     match_date:{
-        type:Date,
-        required:true
+        type:String,
     },
     is_innings_played:{
+        type:Boolean,
+        default:false
+    },
+    isDeleted:{
         type:Boolean,
         default:false
     },
@@ -107,7 +110,7 @@ const PlayerMatchSummarySchema=mongoose.Schema({
             ref:'Dismissal'
         }]  
     },
-    fielding_stats:{
+    fielding:{
         catches:{
             type:Number,
             default:0

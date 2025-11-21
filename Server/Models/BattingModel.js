@@ -40,6 +40,10 @@ const BattingSchema=mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Dismissal',
     },
+    isDeleted:{
+        type:Boolean,
+        default:false
+    },
     bowlers_faced:[{
         bowler_id:{
             type:mongoose.Schema.Types.ObjectId,

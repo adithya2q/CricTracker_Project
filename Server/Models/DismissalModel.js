@@ -26,6 +26,10 @@ const DismissalSchema = new mongoose.Schema({
   fielder_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Player"
+  },
+  isDeleted:{
+    type:Boolean,
+    default:false
   }
 });
 

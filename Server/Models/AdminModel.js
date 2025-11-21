@@ -22,5 +22,5 @@ const AdminSchema=mongoose.Schema({
     timestamps:true
 });
 
-const AdminModel=mongoose.model('Official',AdminSchema);
+const AdminModel=mongoose.model('admin',AdminSchema);
 module.exports=AdminModel;

@@ -1,14 +1,15 @@
 const mongoose=require('mongoose');
 const DismissalSchema = require('./DismissalModel');
+const ExtrasSchema = require('./ExtrasSchema');
 
 const BowlingSchema=mongoose.Schema({
     innings_id:{
-        type:Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Innings',
         required:true
     },
-    Bowler_id:{
-        type:Schema.Types.ObjectId,
+    player_id:{
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Player',
         required:true
     },
@@ -40,14 +41,17 @@ const BowlingSchema=mongoose.Schema({
         type:Number,
         default:0
     },
+    isDeleted:{
+        type:Boolean,
+        default:false
+    },
     Extras:{
         type:ExtrasSchema,
         default:()=>({})
     },
     bowling_status:{
         type:String,
-        enum:['bowled','not_bowled'],
-        default:'active'
+        enum:['bowled','not_bowled','active'],
     },
     Dismissal:[{       
         type:mongoose.Schema.Types.ObjectId,

@@ -114,32 +114,34 @@ const StatisticsSchema=mongoose.Schema({
 const PlayerSchema=mongoose.Schema({
     player_name:{
         type:String,
-        required:true
+
     },
     player_DOB:{
-        type:Date,
-        required:true
+        type:String,
+
+    },
+    player_nationality:{
+        type:String,
+
     },
     player_age:{
         type:Number,
-        required:true
+
     },
     player_role:{
         type:String,
-        required:true
+        enum:['Batsman','Bowler','All Rounder','Wicket Keeper'],
+
     },
     player_batting_style:{
         type:String,
-        required:true
     },
     player_bowling_style:{
         type:String,
-        required:true
     },
     player_teams:[{
-        type:Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Team',
-        required:true
     }],
     special_status:{
         type:String,
@@ -151,14 +153,18 @@ const PlayerSchema=mongoose.Schema({
     },
     player_image:{
         type:String,
-        required:true
+
+    },
+    isDeleted:{
+        type:Boolean,
+        default:false
     },
     player_statistics:{
         T20I:StatisticsSchema,
         ODI:StatisticsSchema,
-        Test:StatisticsSchema,
+        TestI:StatisticsSchema,
         Domestic_T20:StatisticsSchema,
-        Domestic_ODI:StatisticsSchema,
+        Domestic_OD:StatisticsSchema,
         Domestic_Test:StatisticsSchema
     }
        

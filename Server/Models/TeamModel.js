@@ -1,5 +1,28 @@
 const mongoose=require('mongoose');
 
+TeamStatisticsSchema={
+    matches_played:{
+        type:Number,
+        default:0
+    },
+    wins:{
+        type:Number,
+        default:0
+    },
+    losses:{
+        type:Number,
+        default:0
+    },
+    draws:{
+        type:Number,
+        default:0
+    },
+    no_result:{
+        type:Number,
+        default:0
+    }
+}
+
 const TeamSchema=mongoose.Schema({
     team_name:{
         type:String,
@@ -10,48 +33,56 @@ const TeamSchema=mongoose.Schema({
         required:true
     },
     team_captain:{
-        type:Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Player',
-        required:true
     },
-    team_ViceCaptain:{
-        type:Schema.Types.ObjectId,
+    team_viceCaptain:{
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Player',
-        required:true
     },
     team_wicketKeeper:{
-        type:Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Player',
-        required:true
     },  
     team_manager:{
-        type:Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'TeamManager',
-        required:true
     },
     team_players:[{
-        type:Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Player',
-        required:true
     }],
     team_home:{
-        type:Schema.Types.ObjectId,
-        ref:'Venue',
-        required:true
+        type:String,
     },
     team_description:{
         type:String,
-        required:true
     },
     team_trophies_won:{
         type:Number,
         default:0
     },
     playing11:[{
-        type:Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Player',
         required:true
-    }]
+    }],
+    tournaments_won:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Tournament',
+    },
+    isDeleted:{
+        type:Boolean,
+        default:false
+    },
+    statistics:{
+        T20I:TeamStatisticsSchema,
+        ODI:TeamStatisticsSchema,
+        Test:TeamStatisticsSchema,
+        Domestic_T20:TeamStatisticsSchema,
+        Domestic_ODI:TeamStatisticsSchema,
+        Domestic_Test:TeamStatisticsSchema
+    }
 })
 
 const TeamModel=mongoose.model('Team',TeamSchema);

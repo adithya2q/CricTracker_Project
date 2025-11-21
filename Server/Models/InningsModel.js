@@ -54,14 +54,14 @@ const inningsSchema=mongoose.Schema({
         type:Number,
         default:0
     },
-    BattingScorecard:[
+    battingScorecard:[
         {
             type:mongoose.Schema.Types.ObjectId,
             ref:'BattingScore',
             required:true
         }
     ],
-    BowlingScorecard:[
+    bowlingScorecard:[
         {
             type:mongoose.Schema.Types.ObjectId,
             ref:'BowlingScore',
@@ -69,6 +69,10 @@ const inningsSchema=mongoose.Schema({
         }
     ],
     isCompleted:{
+        type:Boolean,
+        default:false
+    },
+    isDeleted:{
         type:Boolean,
         default:false
     }

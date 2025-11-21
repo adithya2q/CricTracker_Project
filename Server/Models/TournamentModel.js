@@ -3,7 +3,7 @@ const mongoose=require('mongoose');
 
 const PointsTableSchema=mongoose.Schema({
     team_id:{
-        type:Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Team',
         required:true
     },
@@ -23,18 +23,18 @@ const PointsTableSchema=mongoose.Schema({
         type:Number,
         default:0
     },
-    points:{
+    no_result:{
         type:Number,
         default:0
     },
-    net_run_rate:{
+    points:{
         type:Number,
         default:0
     }
 });
 
 const TournamentSchema=mongoose.Schema({
-    name:{
+    tournament_name:{
         type:String,
         required:true
     },
@@ -44,12 +44,12 @@ const TournamentSchema=mongoose.Schema({
         required:true
     },
     tournament_teams:[{
-        type:Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Team',
         required:true
     }],
     tournament_matches:[{
-        type:Schema.Types.ObjectId,
+        type:mongoose.Schema.Types.ObjectId,
         ref:'Match',
         required:true
     }],
@@ -63,15 +63,19 @@ const TournamentSchema=mongoose.Schema({
         default:'upcoming'
     },
     tournament_start_date:{
-        type:Date,
+        type:String,
         required:true
     },
     tournament_end_date:{
-        type:Date,
+        type:String,
         required:true
     },
     tournament_image:{
         type:String
+    },
+    isDeleted:{
+        type:Boolean,
+        default:false
     },
     points_table:[PointsTableSchema],
 },{

@@ -1,7 +1,13 @@
+const { default: mongoose } = require("mongoose");
 const BattingModel = require("../Models/BattingModel");
 const InningsModel = require("../Models/InningsModel");
 const MatchModel = require("../Models/MatchModel");
 const PlayerMatchSummaryModel = require("../Models/PlayerMatchSumaryModel");
+const BowlingModel = require("../Models/BowlingModel");
+const DismissalModel = require("../Models/DismissalModel");
+const { path } = require("../Models/ExtrasSchema");
+const PlayerModel = require("../Models/PlayerModel");
+const Playing11Model = require("../Models/Playing11Model");
 
 module.exports={
 updateCommentary:async(req,res)=>{
@@ -48,9 +54,12 @@ updateCommentary:async(req,res)=>{
         }
     },
     updateMatchScore:async(req,res)=>{
+        const session = await mongoose.startSession();
+        session.startTransaction();
         try {
             const {id}=req.params;
-            const {score}=req.body;
+            const score=req.body;
+            console.log(score);
             if(!score){
                 return res.status(400).json({
                     success:false,
@@ -65,8 +74,8 @@ updateCommentary:async(req,res)=>{
                     message:"Match id is required"
                 })
             }
-            const{striker,non_striker,bowler,extras,extrasType,wicket,wicketType,boundary,sixer,fielder,runs,run_out_player}=score;
-            if(!striker||!non_striker|| !bowler){
+            const{striker,nonStriker,bowler,extras,extrasType,wicket,wicketType,boundary,sixer,fielder,runs,run_out_player}=score;
+            if(!striker||!nonStriker|| !bowler){
                 return res.status(400).json({
                     success:false,
                     status:400,
@@ -74,7 +83,7 @@ updateCommentary:async(req,res)=>{
                 })
                 
             }
-            const match=await MatchModel.findById(id);
+            const match=await MatchModel.findById(id).session(session);
                 if(!match){
                     return res.status(404).json({
                         success:false,
@@ -82,46 +91,29 @@ updateCommentary:async(req,res)=>{
                         message:"Match not found"
                     })
                 }
-            let innings=await InningsModel.findOne({match_id:id,isCompleted:false})
+            let innings=await InningsModel.findOne({match_id:id,isCompleted:false}).session(session)
                         .sort({createdAt:-1})
-                        .populate("batting_team")
-                        .populate("bowling_team")
-                        .populate("BattingScorecard")
-                        .populate("BowlingScorecard")
+                        .populate("battingTeam")
+                        .populate("bowlingTeam")
+                        .populate("battingScorecard")
+                        .populate("bowlingScorecard");
 
 
             if(!innings){
-                innings=await InningsModel.create({
-                    match_id:id,
-                    battingTeam:match.battingFirstTeam,
-                    bowlingTeam:match.bowlingFirstTeam, 
-                    BattingScorecard:[],
-                    BowlingScorecard:[]
+                await session.abortTransaction();
+                session.endSession();
+                return res.status(400).json({
+                    success:false,
+                    status:400,
+                    message:"No active innings found. Switch innings first."
                 });
-
             }
-            let Striker=await BattingModel.findOne({innings_id:innings._id,player_id:striker._id})
-                        .populate("Dismissal");
+            let Striker=await BattingModel.findOne({innings_id:innings._id,player_id:striker})
+                        .populate("Dismissal").session(session);
             if(!Striker){
-                Striker=await BattingModel.create({
+                Striker=new BattingModel({
                     innings_id:innings._id,
-                    player_id:striker._id,
-                    Runs:0,
-                    Balls:0,
-                    Fours:0,
-                    Sixes:0,
-                    StrikeRate:0,
-                    Batting_status:"not_out"
-
-                })
-            }
-            let nonStriker=await BattingModel.findOne({innings_id:innings._id,player_id:non_striker._id})
-                        .populate("Dismissal");
-
-            if(!nonStriker){
-                nonStriker=await BattingModel.create({
-                    innings_id:innings._id,
-                    player_id:non_striker._id,
+                    player_id:striker,
                     Runs:0,
                     Balls:0,
                     Fours:0,
@@ -129,53 +121,76 @@ updateCommentary:async(req,res)=>{
                     StrikeRate:0,
                     Batting_status:"not_out"
                 })
+                await Striker.save({session});
             }
-            let Bowler=await BowlingModel.findOne({innings_id:innings._id,player_id:bowler._id})
-                        .populate("Dismissal");
+            let NonStriker=await BattingModel.findOne({innings_id:innings._id,player_id:nonStriker})
+                        .populate("Dismissal").session(session);
+
+            if(!NonStriker){
+                NonStriker=new BattingModel({
+                    innings_id:innings._id,
+                    player_id:nonStriker,
+                    Runs:0,
+                    Balls:0,
+                    Fours:0,
+                    Sixes:0,
+                    StrikeRate:0,
+                    Batting_status:"not_out"
+                })
+                await NonStriker.save({session});
+            }
+            let Bowler=await BowlingModel.findOne({innings_id:innings._id,player_id:bowler})
+                        .populate("Dismissal").session(session);
             if(!Bowler){
-                Bowler=await BowlingModel.create({
+                Bowler=new BowlingModel({
                     innings_id:innings._id,
-                    player_id:bowler._id,
+                    player_id:bowler,
                     Runs:0,
                     Wickets:0,
                     Overs:0,
                     Maidens:0,
                     EconomyRate:0
                 })
+                await Bowler.save({session});
             }
-            let striker_match_summary=await PlayerMatchSummaryModel.findOne({player_id:striker._id,match_id:id});
+            let striker_match_summary=await PlayerMatchSummaryModel.findOne({player_id:striker,match_id:id}).session(session);
             if(!striker_match_summary){
-                striker_match_summary=await PlayerMatchSummaryModel.create({
-                    player_id:striker._id,
+                striker_match_summary=new PlayerMatchSummaryModel({
+                    player_id:striker,
                     match_id:match._id,
                     innings_id:innings._id,
-                    opponent_id:innings.bowlingTeam._id,
+                    opponent_id:innings.bowlingTeam.team_id,
                     format:match.match_type,
                     match_date:match.match_date,
+                    is_innings_played:true
                 })
+                await striker_match_summary.save({session});
             }
-            let non_striker_match_summary=await PlayerMatchSummaryModel.findOne({player_id:non_striker._id,match_id:id});
+            let non_striker_match_summary=await PlayerMatchSummaryModel.findOne({player_id:nonStriker,match_id:id}).session(session);
             if(!non_striker_match_summary){
-               non_striker_match_summary=await PlayerMatchSummaryModel.create({
-                    player_id:non_striker._id,
+               non_striker_match_summary=new PlayerMatchSummaryModel({
+                    player_id:nonStriker,
                     match_id:match._id,
                     innings_id:innings._id,
-                    opponent_id:innings.bowlingTeam._id,
+                    opponent_id:innings.bowlingTeam.team_id,
                     format:match.match_type,
                     match_date:match.match_date,
+                    is_innings_played:true
                 })
+                await non_striker_match_summary.save({session});
             }
 
-            let bowler_match_summary=await PlayerMatchSummaryModel.findOne({player_id:bowler._id,match_id:id});
+            let bowler_match_summary=await PlayerMatchSummaryModel.findOne({player_id:bowler,match_id:id}).session(session);
             if(!bowler_match_summary){
-                bowler_match_summary=await PlayerMatchSummaryModel.create({
-                    player_id:bowler._id,
+                bowler_match_summary=new PlayerMatchSummaryModel({
+                    player_id:bowler,
                     match_id:match._id,
                     innings_id:innings._id,
-                    opponent_id:innings.battingTeam._id,
+                    opponent_id:innings.battingTeam.team_id,
                     format:match.match_type,
                     match_date:match.match_date,
                 })
+                await bowler_match_summary.save({session});
             }
             striker_match_summary.batting = striker_match_summary.batting || {};
             if (!Array.isArray(striker_match_summary.batting.bowlers_faced)) {
@@ -183,12 +198,13 @@ updateCommentary:async(req,res)=>{
                 }
 
                 let existingEntry = striker_match_summary.batting.bowlers_faced.find(
-                        (b) => b.bowler_id.toString() === bowler._id.toString()
+                        (b) => b.bowler_id.toString() === bowler.toString()
                         );
 
             if(!existingEntry){
-                newEntry={bowler_id:bowler._id};
-                striker_match_summary.batting.bowlers_faced.push(newEntry);
+                let newEntry={bowler_id:bowler,runs_conceded:0,balls_bowled:0,is_dismissed:false};
+                striker_match_summary.batting.bowlers_faced.push(newEntry)
+                Striker.bowlers_faced.push(newEntry);
                 existingEntry=newEntry;
             }
 
@@ -200,14 +216,12 @@ updateCommentary:async(req,res)=>{
             
             Striker.Runs+=runs_off_bat;
             if (!innings.Extras) {
-                innings.Extras = { total: 0, wide: 0, noball: 0, bye: 0, legbye: 0 };
+                innings.Extras = { total: 0, wides: 0, noballs: 0, byes: 0, legbyes: 0, penalty: 0 };
             }
             innings.Extras.total+=extra_runs;
             if(extrasType){
-                if(innings.Extras[extrasType]!==undefined){
-                    innings.Extras[extrasType]+=extra_runs;
-                }
-                if(extrasType=='wide'||extrasType=='noball'){
+                innings.Extras[extrasType]+=extra_runs;
+                if(extrasType==='wides'||extrasType==='noballs'){
                     is_legal_ball=false;
                     runs_against_bowler+=extra_runs;
                 }
@@ -241,18 +255,16 @@ updateCommentary:async(req,res)=>{
         }
         
 
-
             if(wicket){
             innings.Wickets+=Number(wicket)||0;
-            const newDismissal=await DismissalModel.create({
+            const newDismissal=new DismissalModel({
                 dismissal_type:wicketType,
             })
             
-            if(wicketType!='runout'){
-                newDismissal.batsman_id=striker._id;
-                newDismissal.bowler_id=bowler._id;
-                newDismissal.fielder_id=fielder._id?fielder._id:null;
-                await newDismissal.save();
+            if(wicketType!='run_out'){
+                newDismissal.batsman_id=striker;
+                newDismissal.bowler_id=bowler;
+                newDismissal.fielder_id=fielder?fielder:null;
                 Striker.Dismissal=newDismissal._id;
                 Bowler.Dismissal.push(newDismissal._id);
                 Striker.Batting_status='out';
@@ -263,29 +275,32 @@ updateCommentary:async(req,res)=>{
             }
             else{
                 if(run_out_player){
-                    if(run_out_player._id==striker._id){
-                        newDismissal.batsman_id=striker._id;
-                        newDismissal.bowler_id=bowler._id;
-                        newDismissal.fielder_id=fielder._id?fielder._id:null;
-                        newDismissal.save();
+                    if(run_out_player===striker){
+                        newDismissal.batsman_id=striker;
+                        newDismissal.bowler_id=bowler;
+                        newDismissal.fielder_id=fielder?fielder:null;
                         Striker.Dismissal=newDismissal._id;
                         Striker.Batting_status='out';
                     }else{
-                        newDismissal.batsman_id=striker._id;
-                        newDismissal.bowler_id=bowler._id;
-                        newDismissal.fielder_id=fielder._id?fielder._id:null;
-                        newDismissal.save();
-                        nonStriker.Dismissal=newDismissal._id;
-                        nonStriker.Batting_status='out';
+                        newDismissal.batsman_id=nonStriker;
+                        newDismissal.bowler_id=bowler;
+                        newDismissal.fielder_id=fielder?fielder:null;
+                        NonStriker.Dismissal=newDismissal._id;
+                        NonStriker.Batting_status='out';
                     }
                 }
             }
+                await newDismissal.save({session});
+                }
+                else{
+            Striker.Batting_status='not_out';
+            NonStriker.Batting_status='not_out';
                 }
                 let strike_rotate_run;
                 let strikerbat;
                 if(is_legal_ball){
                   strike_rotate_run=Number(runs)+Number(extras);
-                  if(innings.balls%6===0 && innings.balls!==0){
+                  if(innings.Balls%6===0 && innings.Balls!==0){
                   strike_rotate_run=Number(runs)+Number(extras);
                   if(strike_rotate_run%2===0){
                     strikerbat=nonStriker;
@@ -317,29 +332,37 @@ updateCommentary:async(req,res)=>{
                     strikerbat=nonStriker;
                   }
                 }
+            const current_nonstriker=strikerbat===striker?nonStriker:striker;
+            const current_bowler=innings.Balls%6!==0 && innings.Balls!==0?bowler:'';
             innings.runRate=innings.Overs === 0 ? innings.Runs : ((innings.Runs / innings.Balls)*6).toFixed(2);
             innings.Boundaries+=Number(boundary)||0;
-            Striker.Boundaries+=Number(boundary)||0;
+            Striker.Fours+=Number(boundary)||0;
             innings.Sixes+=Number(sixer)||0;
             Striker.Sixes+=Number(sixer)||0;
-            await innings.save();
-            await striker_match_summary.save();
-            await bowler_match_summary.save();
+            Bowler.bowling_status='active'
+            await innings.save({session});
+            await striker_match_summary.save({session});
+            await bowler_match_summary.save({session});
             Bowler.EconomyRate = Bowler.Balls > 0 ? ((Bowler.Runs / Bowler.Balls) * 6).toFixed(2) : 0;
             Striker.StrikeRate=Striker.Balls === 0 ? 0:(Striker.Runs/Striker.Balls)*100;
-            await Striker.save();
-            await nonStriker.save();
-            await Bowler.save();
+            await Striker.save({session});
+            await NonStriker.save({session});
+            await Bowler.save({session});
 
-
+            await session.commitTransaction();
+            session.endSession();
             return res.status(200).json({
                 success:true,
                 status:200,
                 message:"Score updated successfully",
-                strikerbat
+                strikerbat,
+                current_nonstriker,
+                current_bowler
             })
 
     } catch (error) {
+        await session.abortTransaction();
+        session.endSession();
         return res.status(500).json({
             success:false,
             status:500,
@@ -350,9 +373,35 @@ updateCommentary:async(req,res)=>{
     }
     },
 switchInnings:async(req,res)=>{
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    const createScorecard=async(newInnings,session)=>{
+        for (const player of newInnings.battingTeam.players) {
+                const currentInnings_batting_scorecard=new BattingModel({
+                    innings_id:newInnings._id,
+                    player_id:player._id,
+                    batting_status:'not_batted'
+                })
+                await currentInnings_batting_scorecard.save({session});
+                newInnings.battingScorecard.push(currentInnings_batting_scorecard._id);
+            }
+            for (const player of newInnings.bowlingTeam.players) {
+                const currentInnings_bowling_scorecard=new BowlingModel({
+                    innings_id:newInnings._id,
+                    player_id:player._id,
+                    bowling_status:'not_bowled'
+                })
+                await currentInnings_bowling_scorecard.save({session});
+                newInnings.bowlingScorecard.push(currentInnings_bowling_scorecard._id);
+            }
+    }
     try {
         const{id}=req.params;
-        const match=await MatchModel.findById(id).populate('innings');
+        const match=await MatchModel.findById(id).session(session).populate('innings')
+                                    .populate({ path: 'playingXI_team1', select: 'team_id' }) 
+                                    .populate({ path: 'playingXI_team2', select: 'team_id' });;
+             
         if(!match){
             return res.status(404).json({
                 success:false,
@@ -361,20 +410,35 @@ switchInnings:async(req,res)=>{
             })
         }
 
-        const currentInnigsIndex=match.InningsNumber-1;
-        const currentInnings=await InningsModel.findById(match.innings[currentInnigsIndex]);
+        const currentInningsIndex=match.InningsNumber-1;
+        const currentInnings=await InningsModel.findById(match.innings[currentInningsIndex]).session(session);
 
-        if(currentInnings){
+        const isTest=match.match_type==='TestI' || match.match_type==='Domestic_Test';
+        const maxInnings=isTest?4:2;
+         match.InningsNumber+=1;
+
+         if(currentInnings){
             currentInnings.isCompleted = true;
-            await currentInnings.save();
+            await currentInnings.save({session});
         }
 
-        match.InningsNumber+=1;
-        if((match.match_type==='TestI' || match.match_type==='Domestic_Test')&& match.InningsNumber<=4){
-            let battingTeam,bowlingTeam
+        if (match.InningsNumber>maxInnings) {
+            await session.abortTransaction();
+            session.endSession();
+            return res.status(400).json({
+                success:false,
+                status:400,
+                message:"Match already completed"
+            })
+        }
+        
+        let battingTeam,bowlingTeam
+
+
+       
             if(match.InningsNumber%2===1){
-                battingTeam=match.battingFirstTeam
-                bowlingTeam=match.bowlingFirstTeam
+                battingTeam=match.battingFirstTeam;
+                bowlingTeam=match.bowlingFirstTeam;
             }
             else{
                 battingTeam=match.bowlingFirstTeam;
@@ -385,66 +449,38 @@ switchInnings:async(req,res)=>{
                 battingTeam,
                 bowlingTeam
             });
-            await newInnings.save();
+            
+            await newInnings.save({session});
             match.innings.push(newInnings._id);
             match.currentInnings=newInnings._id;
-            await match.save()
-            for (const player of battingTeam.players) {
-                const currentInnings_batting_scorecard=new BattingScorecardModel({
-                    innings:newInnings._id,
-                    player:player._id,
-                    batting_status:'not_batted'
-                })
-                await currentInnings_batting_scorecard.save();
-            }
-            for (const player of bowlingTeam.players) {
-                const currentInnings_bowling_scorecard=new BowlingScorecardModel({
-                    innings:newInnings._id,
-                    player:player._id,
-                    batting_status:'not_bowled'
-                })
-                await currentInnings_bowling_scorecard.save();
-            }
+            await match.save({session})
+           
+            await newInnings.populate([
+            {path: "battingTeam", options: { session }, populate: { path: "players", options: { session }}},
+            {path: "bowlingTeam",options: { session }, populate: { path: "players", options: { session } }}
+            ]);
 
-            return res.status(200).json({
-                succes:true,
-                status:200,
-                message: `Switched to innings ${match.InningsNumber}`,
-                data: match,newInnings,
-            })
-        }
+            newInnings.battingScorecard = newInnings.battingScorecard || [];
+            newInnings.bowlingScorecard = newInnings.bowlingScorecard || [];
 
-        if(match.match_type !== 'Test'&& match.match_type !== 'Domestic_Test'&& match.InningsNumber<=2){
-            const newInnings=new InningsModel({
-                match_id:id,
-                battingTeam:match.bowlingFirstTeam,
-                bowlingTeam:match.battingFirstTeam
-            })
-            await newInnings.save();
+            await createScorecard(newInnings,session);
 
-            match.innings.push(newInnings._id);
-            match.currentInnings=newInnings._id;
-            await match.save();
+            await newInnings.save({session});
+            await session.commitTransaction();
+            session.endSession();
             return res.status(200).json({
                 success:true,
                 status:200,
                 message: `Switched to innings ${match.InningsNumber}`,
-                data: match,newInnings,
+                data: match,
+                newInnings:newInnings,
             })
 
-        }
-        if (
-            (match.match_type !== 'Test'&& match.match_type !== 'Domestic_Test' && match.currentInnings > 2) ||
-            (match.match_type === 'Test'&& match.match_type !== 'Domestic_Test'&& match.currentInnings > 4)
-            ) {
-            return res.status(400).json({
-                success: false,
-                status: 400,
-                message: 'Match is completed',
-            });
-            }
         
     } catch (error) {
+        console.error(error);
+        await session.abortTransaction();
+        session.endSession();
         return res.status(500).json({
             success:false,
             status:500,
@@ -454,10 +490,12 @@ switchInnings:async(req,res)=>{
         
     }
     },
-matchComplete:async(req,res)=>{
+matchScorecardComplete:async(req,res)=>{
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
-        const {id}=req.body;
-        const match=await MatchModel.findById(id);
+        const {id}=req.params;
+        const match=await MatchModel.findById(id).session(session);
         if(!match){
             return res.status(404).json({
                 success:false,
@@ -466,21 +504,28 @@ matchComplete:async(req,res)=>{
             })
         }
         match.status='completed';
-        const team1 = await Playing11Model.findById(match.battingTeam);
-        const team2 = await Playing11Model.findById(match.bowlingTeam);
+        const team1 = await Playing11Model.findById(match.playingXI_team1).session(session);
+        const team2 = await Playing11Model.findById(match.playingXI_team2).session(session);
         const allPlayers = [...team1.players, ...team2.players];
 
         const format = match.match_type; 
         await PlayerModel.updateMany(
         { _id: { $in: allPlayers } },
         { $inc: { [`player_statistics.${format}.matches_played`]: 1 } }
-        );
-        await match.save(); 
+        ).session(session);
+        await match.save({session}); 
 
         for (const inningsid of match.innings){
-            const innings=await InningsModel.findById(inningsid._id)
-                            .populate("BattingScorecard")
-                            .populate("BowlingScorecard");
+            const innings=await InningsModel.findById(inningsid)
+                            .populate({
+                                path: "battingScorecard",
+                                populate: { path: "Dismissal" }
+                            })
+                            .populate({
+                                path: "bowlingScorecard",
+                                populate: { path: "Dismissal" }
+                            })
+                            .session(session);
 
             if (!innings) {
                 return res.status(404).json({
@@ -489,8 +534,8 @@ matchComplete:async(req,res)=>{
                 });
                 }
 
-                for(const bat of innings.BattingScorecard){
-                    const player=await PlayerModel.findById(bat.player_id);
+                for(const bat of innings.battingScorecard){
+                    const player=await PlayerModel.findById(bat.player_id).session(session);
                     if(!player){
                         return res.status(404).json({
                             success:false,
@@ -501,7 +546,7 @@ matchComplete:async(req,res)=>{
                     const player_match_summary=await PlayerMatchSummaryModel.findOne({
                         player_id:player._id,
                         match_id:match._id
-                        });
+                        }).session(session);
                         if(!player_match_summary){
                             return res.status(404).json({
                                 success:false,
@@ -513,9 +558,10 @@ matchComplete:async(req,res)=>{
                     player_match_summary.batting.balls=bat.Balls;
                     player_match_summary.batting.fours=bat.Fours;
                     player_match_summary.batting.sixes=bat.Sixes;
-                    player_match_summary.batting.dismissal_against=bat.Dismissal?._id;
                     player_match_summary.batting.batting_status=bat.Batting_status;
-                    
+                    if(bat.Dismissal){
+                    player_match_summary.batting.dismissal_against=bat.Dismissal?._id;
+                    }
                     
                     if(bat.Batting_status!=='not_batted'){
                         player.player_statistics[match.match_type].Innings_played+=1;
@@ -524,28 +570,29 @@ matchComplete:async(req,res)=>{
                             player.player_statistics[match.match_type].not_outs+=1;
                         }
                     }
+                    const no_of_outs=player.player_statistics[match.match_type].Innings_played-player.player_statistics[match.match_type].not_outs;
                     player.player_statistics[match.match_type].runs+=bat.Runs; 
                     player.player_statistics[match.match_type].balls_faced+=bat.Balls;
                     player.player_statistics[match.match_type].fours+=bat.Fours;
                     player.player_statistics[match.match_type].sixes+=bat.Sixes;
                     player.player_statistics[match.match_type].highest_score=Math.max(player.player_statistics[match.match_type].highest_score,bat.Runs);
-                    player.player_statistics[match.match_type].batting_average=player.player_statistics[match.match_type].runs/player.player_statistics[match.match_type].Innings_played;
-                    player.player_statistics[match.match_type].strike_rate=((player.player_statistics[match.match_type].runs/player.player_statistics[match.match_type].balls_faced)*100).toFixed(2);
+                    player.player_statistics[match.match_type].batting_average=no_of_outs>0?player.player_statistics[match.match_type].runs/no_of_outs:player.player_statistics[match.match_type].Innings_played>0?player.player_statistics[match.match_type].runs:0;
+                    player.player_statistics[match.match_type].strike_rate=player.player_statistics[match.match_type].balls_faced>0?parseFloat(((player.player_statistics[match.match_type].runs/player.player_statistics[match.match_type].balls_faced)*100).toFixed(2)):0;
                     if(bat.Runs>=50 && bat.Runs<100){
                         player.player_statistics[match.match_type].fifties+=1;
                     }
                     if(bat.Runs>=100){
-                        player.player_statistics[match.match_type].hundreds+=1;
+                        player.player_statistics[match.match_type].centuries+=1;
                     }
                     if(bat.Runs>=200){
                         player.player_statistics[match.match_type].double_centuries+=1;
                     }
-                    await Promise.all([player.save(),
-                    player_match_summary.save()]);
+                    await Promise.all([player.save({session}),
+                    player_match_summary.save({session})]);
 
                 }
-                for(const bowl of innings.BowlingScorecard){
-                    const player=await PlayerModel.findById(bowl.bowler_id);
+                for(const bowl of innings.bowlingScorecard){
+                    const player=await PlayerModel.findById(bowl.player_id).session(session);
                     if(!player){
                         return res.status(404).json({
                             success:false,
@@ -556,7 +603,7 @@ matchComplete:async(req,res)=>{
                     const player_match_summary=await PlayerMatchSummaryModel.findOne({
                         player_id:player._id,
                         match_id:match._id
-                        });
+                        }).session(session);
                         if(!player_match_summary){
                             return res.status(404).json({
                                 success:false,
@@ -568,18 +615,17 @@ matchComplete:async(req,res)=>{
                     player_match_summary.bowling.balls_bowled+=bowl.Balls;
                     player_match_summary.bowling.wickets+=bowl.Wickets;
                     player_match_summary.bowling.overs+=bowl.Overs;
-                    player_match_summary.bowling.Maidens+=bowl.Maidens;
-                    player_match_summary.bowling.dismissals.push(...bowl.Dismissal);
-                    player.player_statistics[match.match_type].matches_played+=1;
+                    player_match_summary.bowling.maidens+=bowl.Maidens;
+                    player_match_summary.bowling.dismissals.push(...bowl.Dismissal.map(d => d._id));
                     player.player_statistics[match.match_type].runs_given+=bowl.Runs;
                     player.player_statistics[match.match_type].balls_bowled+=bowl.Balls;
                     player.player_statistics[match.match_type].wickets+=bowl.Wickets;
                     player.player_statistics[match.match_type].overs_bowled+=bowl.Overs;
                     player.player_statistics[format].bowling_average = player.player_statistics[format].wickets > 0
                     ? player.player_statistics[format].runs_given / player.player_statistics[format].wickets
-                    : 0;
-                    player.player_statistics[format].economy = player.player_statistics[format].overs_bowled > 0
-                    ? player.player_statistics[format].runs_given / player.player_statistics[format].overs_bowled
+                    : player.player_statistics[format].runs_given;
+                    player.player_statistics[format].economy_rate = player.player_statistics[format].balls_bowled > 0
+                    ? parseFloat(((player.player_statistics[format].runs_given / player.player_statistics[format].balls_bowled)*6).toFixed(2))
                     : 0;
                     if(bowl.Wickets>=5 && bowl.Wickets<10){
                         player.player_statistics[match.match_type].five_wickets+=1;
@@ -609,34 +655,39 @@ matchComplete:async(req,res)=>{
                                     fielder_match_summary.fielding.stumpings+=1;
                                 }
                                 else if(dismissal.dismissal_type==="run_out"){
-                                    fielder.player_statistics[match.match_type].runouts+=1;
+                                    fielder.player_statistics[match.match_type].run_outs+=1;
                                     fielder_match_summary.fielding.run_outs+=1;
                                 }
-                                else if(dismissal.dismissal_type==="caught"){
+                                else if(dismissal.dismissal_type==="caught"||dismissal.dismissal_type === "caught and bowled"){
                                     fielder.player_statistics[match.match_type].catches+=1;
                                     fielder_match_summary.fielding.catches+=1;
                                 }
-                                await Promise.all([fielder.save(),
-                                fielder_match_summary.save()]);
+                                await Promise.all([fielder.save({session}),
+                                fielder_match_summary.save({session})]);
                             }
                     }
-
-                    await Promise.all([ player.save(),
-                    player_match_summary.save()]);
+                    
+                    await Promise.all([ player.save({session}),
+                    player_match_summary.save({session})]);
                 }    
             innings.isCompleted = true;
-            await innings.save();
+            await innings.save({session});
             
         }
+        await session.commitTransaction();
+        session.endSession();
         return res.status(200).json({
             success:true,
             status:200,
-            message:"Match completed successfully",
+            message:"Match Scorecard completed successfully",
             data:match
         })
 
          }  
      catch (error) {
+        await session.abortTransaction();
+        session.endSession();
+        console.error(error);
         return res.status(500).json({
             success:false,
             status:500,

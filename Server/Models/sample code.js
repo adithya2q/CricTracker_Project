@@ -376,3 +376,7 @@ const pipeline = [
                           }
                         }
 
+                                        battingTeam=match.battingFirstTeam.toString()===match.playingXI_team1.toString()?match.playingXI_team1._id:match.playingXI_team2._id;
+                bowlingTeam=match.bowlingFirstTeam.toString()===match.playingXI_team1.toString()?match.playingXI_team1._id:match.playingXI_team2._id;
+
+

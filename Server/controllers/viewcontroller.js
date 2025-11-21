@@ -2,11 +2,17 @@ const { get } = require("mongoose");
 const TeamModel = require("../Models/TeamModel");
 const TournamentModel = require("../Models/TournamentModel");
 const PlayerModel = require("../Models/PlayerModel");
+const MatchModel = require("../Models/MatchModel");
+const { path } = require("../Models/ExtrasSchema");
 
 module.exports={
     getMatches:async(req,res)=>{
         try{
-            const matches=await MatchModel.find({isDeleted:false}).lean();
+            const matches=await MatchModel.find({isDeleted:false})
+            .populate('team1')
+            .populate('team2')
+            .populate('tossWinner')
+            .lean();
             if(!matches){
                 return res.status(404).json({
                     success:false,
@@ -19,7 +25,7 @@ module.exports={
                 success:true,
                 status:200,
                 message:"Match found",
-                data:match
+                data:matches
             })
         }
         catch(error){
@@ -35,7 +41,30 @@ module.exports={
     MatchDetails:async(req,res)=>{
         try {
             const {id}=req.params;
-            const match=await MatchModel.findById(id).lean();
+            const match=await MatchModel.findById(id)
+            .populate('team1')
+            .populate('team2')
+            .populate('tournament')
+            .populate('tossWinner')
+            .populate({
+                path: 'innings',
+                populate: [
+                    { path: 'battingTeam', populate: { path: 'team_id' } },
+                    { path: 'bowlingTeam', populate: { path: 'team_id' } },
+                    { path: 'battingScorecard', populate: { path: 'player_id' } },
+                    { path: 'bowlingScorecard', populate: { path: 'player_id' } }
+                ]
+            })
+            .populate({
+                path: 'currentInnings',
+                populate: [
+                    { path: 'battingTeam', populate:[{ path: 'team_id' },{path:'players'}]},
+                    { path: 'bowlingTeam', populate: [{ path: 'team_id' },{path:'players'}] },
+                    { path: 'battingScorecard', populate: { path: 'player_id' } },
+                    { path: 'bowlingScorecard', populate: { path: 'player_id' } }
+                ]
+            })
+            .lean();
             if(!match){
                 return res.status(404).json({
                     success:false,
@@ -102,6 +131,7 @@ module.exports={
                     data:[]
                 })
             }
+            
             else{
                 return res.status(200).json({
                     success:true,
@@ -125,7 +155,7 @@ module.exports={
     getTeamDetails:async(req,res)=>{
         try {
         const {id}=req.params;
-        const team=await TeamModel.findById(id).lean()
+        const team=await TeamModel.findById(id).populate('team_manager').populate('team_captain').populate('team_players').populate('playing11').lean()
         if(!team){
             return res.status(404).json({
                 success:false,
@@ -186,7 +216,7 @@ module.exports={
     getPlayerDetails:async(req,res)=>{
         try {
         const {id}=req.params;
-        const player=await PlayerModel.findById(id).lean()
+        const player=await PlayerModel.findById(id).populate('player_teams');
         if(!player){
             return res.status(404).json({
                 success:false,
@@ -209,11 +239,8 @@ module.exports={
                 status:500,
                 message:"Internal server error",
                 error:error.message
-            });
-            
+            });  
         }
- 
-
     },
     getTournaments:async(req,res)=>{
         try{
@@ -249,7 +276,10 @@ module.exports={
     getTournamentDetails:async(req,res)=>{
         try {
             const {id}=req.params;
-            const tournament=await TournamentModel.findById(id).lean();
+            const tournament=await TournamentModel.findById(id)
+                            .populate('tournament_teams')
+                            .populate({path:'tournament_matches',populate:[{path:'team1'},{path:'team2'},{path:'tossWinner'}]})
+                            .populate('points_table.team_id').lean();
             if(!tournament){
                 return res.status(404).json({
                     success:false,

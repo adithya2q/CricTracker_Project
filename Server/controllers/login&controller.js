@@ -1,9 +1,9 @@
-const ViewerModel = require("../Models/ViewerModel");
 const AdminModel = require("../Models/AdminModel");
 const TeamManagerModel = require("../Models/TeamManagerModel");
 const ScorerModel = require("../Models/ScorerModel");
 const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
+const ViewerModel = require("../Models/Viewermodel");
 
 const rolemodels={
     admin:AdminModel,
@@ -26,6 +26,13 @@ module.exports={
                 });
             }
             const Models=rolemodels[role];
+            if(!Models){
+                return res.status(400).json({
+                    success:false,
+                    status:400,
+                    message:"Invalid role"
+                });
+            }
             const userFound=await Models.findOne({email:email}).lean();
                 if(!userFound){
                     return res.status(400).json({
@@ -43,7 +50,7 @@ module.exports={
                     });    
                 }
                 delete userFound.password;
-                const token=jwt.sign({id:userFound._id,role:role},process.env.JWT_SECRET);
+                const token=jwt.sign({id:userFound._id,role:role},process.env.JWT_SECRET_KEY,{expiresIn:'5d'});
                 return res.status(200).json({
                     success:true,
                     status:200,
@@ -63,7 +70,7 @@ module.exports={
     },
     UserRegister:async(req,res)=>{
         try{
-            const {name,phone,email,password,confirmPassword,role}=req.body;
+            const {name,phone,email,password,confirmPassword,role,team_id}=req.body;
 
             // checking for n any missing fields
             if(!name || !email || !phone || !password || !confirmPassword || !role){
@@ -94,13 +101,20 @@ module.exports={
             }
             
             const encryptedPassword=await bcrypt.hash(password,10);
-            const newUser=new Models({name,email,phone,password:encryptedPassword});
-            await newUser.save();
+            if(role==='teamManager' && team_id){
+                const newManager=new Models({name,email,phone,password:encryptedPassword,team_id});
+                newManager.save();
+            }
+            else{
+                const newUser=new Models({name,email,phone,password:encryptedPassword});
+                await newUser.save();
+            }
+            delete newUser.password;
             return res.status(201).json({
                 success:true,
                 status:201,
-                message:"User registered successfully",
-                data:newUser
+                message:"User registered successfully as a "+role,
+                data:newUser?newUser:newManager
             });
 
         }

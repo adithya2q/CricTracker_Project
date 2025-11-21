@@ -14,16 +14,14 @@ const MatchSchema=mongoose.Schema({
     playingXI_team1:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Playing11',
-        required: true
     },
     playingXI_team2:{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Playing11',
-        required: true
      },
     match_type:{    
         type:String,
-        enum:['T20I','ODI','Test','Domestic'],
+        enum:['T20I','ODI','TestI','Domestic_T20', 'Domestic_OD', 'Domestic_Test'],
         required:true
     },
     match_category: {
@@ -42,11 +40,10 @@ const MatchSchema=mongoose.Schema({
         type:String,
         required:true
     },
-    date:{
-        type:Date,
-        required:true
+    match_date:{
+        type:String,
     },
-    status:{
+    match_status:{
         type:String,
         enum:['live','completed','upcoming','cancelled'],
         default:'upcoming'
@@ -59,13 +56,13 @@ const MatchSchema=mongoose.Schema({
         type:String,
         enum:['bat','field'],
     },
-    BattingFirstTeam:{
+    battingFirstTeam:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Team'
+        ref:'Playing11'
     },
-    BowlingFirstTeam:{
+    bowlingFirstTeam:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Team'
+        ref:'Playing11'
     },
     matchWinner:{
         type:mongoose.Schema.Types.ObjectId,
@@ -83,7 +80,6 @@ const MatchSchema=mongoose.Schema({
     innings:[{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Innings',
-        required:true
     }],
     InningsNumber:{
         type:Number,
@@ -91,7 +87,7 @@ const MatchSchema=mongoose.Schema({
     },
     currentInnings: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Inning',
+        ref: 'Innings',
         default: null
 },
 

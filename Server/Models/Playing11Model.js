@@ -9,8 +9,7 @@ const Playing11Schema=mongoose.Schema({
     },
     match_id:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:'Match',
-        unique:true    
+        ref:'Match',  
     },
     players:[{
         type:mongoose.Schema.Types.ObjectId,

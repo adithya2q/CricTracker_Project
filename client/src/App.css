@@ -1,0 +1,16 @@
+
+
+CSS
+
+.justify-content-center .nav-link {
+    border-bottom: 3px solid transparent; 
+    transition: border-bottom 0.3s ease-in-out; 
+    color: #000; 
+}
+
+
+.justify-content-center .nav-link.active {
+    border-bottom: 3px solid #007bff; 
+    color: #007bff; 
+    background-color: transparent !important; 
+}

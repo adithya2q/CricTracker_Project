@@ -69,13 +69,20 @@ const MatchSchema=mongoose.Schema({
         ref:'Team'
     },
     result:String,
-    Commentary:{
-        type:[String],
-        default:[]
-    },
-    Chat:{
-        type:[String],
-        default:[]
+    commentary:[{
+        over:{type:Number},
+        commentary:{type:String},
+        runs:{type:Number}
+    }],
+    chat:{
+        user:{
+            type:mongoose.Schema.Types.ObjectId,
+            ref:'Viewer',
+            required:true
+        },
+        message:{
+            type:String
+        }
     },
     innings:[{
         type:mongoose.Schema.Types.ObjectId,

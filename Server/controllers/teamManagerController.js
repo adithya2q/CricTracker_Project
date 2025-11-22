@@ -111,7 +111,7 @@ getPlayerPerformance:async(req,res)=>{
         };
         const pipeline=getAggregationPipeline(match_filter,format,limit);
         const aggregate=await PlayerMatchSummaryModel.aggregate(pipeline);
-        const inningsQuery=await PlayerMatchSummaryModel.find(match_filter).populate([{path:"match_id"},{path:"tournament"}]).populate("opponent_id").sort({_id:-1}).lean();
+        const inningsQuery=await PlayerMatchSummaryModel.find(match_filter).populate([{path:"match_id",populate:{path:"tournament"}}]).populate("opponent_id").sort({_id:-1}).lean();
         return res.status(200).json({
             success:true,
             status:200,

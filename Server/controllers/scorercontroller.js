@@ -13,7 +13,8 @@ module.exports={
 updateCommentary:async(req,res)=>{
     try{
         const {id}=req.params;
-        const {commentary}=req.body;
+        console.log(req.body);
+        const commentary=req.body;
         if(!commentary){
             return res.status(400).json({
                 success:false,

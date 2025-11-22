@@ -28,7 +28,7 @@ router.post('/match/create',authMiddleware,authRoles('admin'),createMatch);
 router.patch('/match/:id/updateinfo',authMiddleware,authRoles('admin','scorer'),updateMatchInfo);
 router.post('/match/:id/scorecared/complete',authMiddleware,authRoles('admin','scorer'),matchScorecardComplete);
 router.post('/match/:matchId/complete',authMiddleware,authRoles('admin','scorer'),matchCompleted);
-router.post('/match/:id/updatecommentary',authMiddleware,authRoles('admin','scorer'),updateCommentary);
+router.patch('/match/:id/updatecommentary',authMiddleware,authRoles('admin','scorer'),updateCommentary);
 router.patch('/match/:id/updatescore',authMiddleware,authRoles('admin','scorer'),updateMatchScore);
 router.post('/match/:id/switchinnings',authMiddleware,authRoles('admin','scorer'),switchInnings);
 router.post('/match/:id/uploadchat',authMiddleware,authRoles('viewer', 'admin', 'teamManager', 'scorer'),updateChat);

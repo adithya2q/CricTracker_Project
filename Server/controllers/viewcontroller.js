@@ -4,6 +4,8 @@ const TournamentModel = require("../Models/TournamentModel");
 const PlayerModel = require("../Models/PlayerModel");
 const MatchModel = require("../Models/MatchModel");
 const { path } = require("../Models/ExtrasSchema");
+const ViewerModel = require("../Models/Viewermodel");
+const { populate } = require("../Models/DismissalModel");
 
 module.exports={
     getMatches:async(req,res)=>{
@@ -308,7 +310,9 @@ module.exports={
     updateChat:async(req,res)=>{
         try{
             const {id}=req.params;
-            const {chat}=req.body;
+            console.log(req.body);
+            console.log(req.userId);
+            const chat=req.body;
             if(!chat){
                 return res.status(404).json({
                     success:false,
@@ -317,10 +321,8 @@ module.exports={
                     data:chat
                 });
             }
-            else{
-            const match=await MatchModel.findById(id);
-            match.chat.push(chat);
-            await match.save();
+            else{ 
+            const match = await MatchModel.findByIdAndUpdate(id, { $push: { chat: { user: req.userId, message: chat.message } } }, { new: true }).lean();
             if(!match){
                 return res.status(404).json({
                     success:false,
@@ -351,7 +353,8 @@ module.exports={
 getChat:async(req,res)=>{
     try {
         const {id}=req.params;
-        const match=await MatchModel.findById(id).lean();
+        const match=await MatchModel.findById(id).populate({path:'chat.user'}).lean();
+        console.log(match.chat);
         if(!match){
             return res.status(404).json({
                 success:false,

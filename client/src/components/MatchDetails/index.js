@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { getChat, getMatchDetails, uploadChat } from '../apiUtils/userApi';
 import { NavLink, useNavigate, useParams } from 'react-router-dom';
 import { Accordion, Button, Form, ListGroup, Nav, Spinner, Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { jwtDecode } from 'jwt-decode';
 import MatchComplete from '../MatchComplete';
+import io from 'socket.io-client';
 
+
+
+const SOCKET_SERVER_URL = process.env.REACT_APP_API_URL;
 const MatchDetails = () => {
 const {id}=useParams();
 const [activeTab,setActiveTab]=useState('scorecard');
@@ -17,12 +21,7 @@ const [chat,setChat]=useState({
 const [chatHistory, setChatHistory] = useState([]);
 const [role,setRole]=useState('');
 
-useEffect(()=>{
-const token=localStorage.getItem('token')
-const decodedToken=token?jwtDecode(localStorage.getItem('token')):null;
-console.log(decodedToken);
-setRole(decodedToken.role);
-const fetchMatch=async(id)=>{
+const fetchMatch=useCallback(async(id)=>{
     try{
     const response=await getMatchDetails(id);
     console.log(response);
@@ -42,9 +41,29 @@ const fetchMatch=async(id)=>{
     finally{
         setLoading(false);
             }
-}
+});
+useEffect(()=>{
+const token=localStorage.getItem('token')
+const decodedToken=token?jwtDecode(localStorage.getItem('token')):null;
+console.log(decodedToken);
+setRole(decodedToken.role);
 fetchMatch(id);
 },[id])
+
+useEffect(()=>{
+  const socket=io(SOCKET_SERVER_URL);
+
+  socket.emit('joinRoom',id); 
+
+  socket.on('score_update',()=>{
+    fetchMatch();
+  })
+
+  return ()=>{
+    socket.disconnect();
+    socket.off('score_update');
+  }
+},[id,fetchMatch]);
 
 const handleChatChange=(e)=>{
   const {name,value}=e.target;

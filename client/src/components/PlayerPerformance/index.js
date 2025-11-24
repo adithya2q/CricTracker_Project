@@ -55,11 +55,11 @@ const PlayerPerformance = () => {
     }
 
   return (
-    <div>
+    <div >
         <Row>
         <Form onSubmit={handleFilterSubmit}>
           {!id?<Form.Group>
-          <Form.Label>Select Player</Form.Label>
+          <Form.Label className='text-white'>Select Player</Form.Label>
           <Form.Select
           name='player_id'
           type='text'
@@ -70,7 +70,7 @@ const PlayerPerformance = () => {
           </Form.Select>
           </Form.Group>:null}
           <Form.Group>
-          <Form.Label>Select Format</Form.Label>
+          <Form.Label className='text-white'>Select Format</Form.Label>
           <Form.Select
           name='format'
           type='text'
@@ -88,7 +88,7 @@ const PlayerPerformance = () => {
           </Form.Group>
 
           <Form.Group>
-          <Form.Label>Limit</Form.Label>
+          <Form.Label className='text-white'>Limit</Form.Label>
           <Form.Control
           name='limit'
           type='Number'
@@ -125,7 +125,7 @@ const PlayerPerformance = () => {
         </Card>
 
         <Card className="p-3 shadow-sm">
-        <h5>Last {innings.length} Innings</h5>
+        <h5 className='text-white'>Last {innings?.length} Innings</h5>
         <Table striped hover>
           <thead>
             <tr>

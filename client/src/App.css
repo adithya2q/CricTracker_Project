@@ -14,3 +14,15 @@ CSS
     color: #007bff; 
     background-color: transparent !important; 
 }
+
+
+.players-table > tbody > tr:nth-of-type(odd) > td,
+.players-table > tbody > tr:nth-of-type(odd) > th {
+  background-color: green; 
+  color: white;
+}
+
+.players-table > tbody > tr:nth-of-type(even) > td {
+    background-color: beige;
+    color: firebrick;
+}

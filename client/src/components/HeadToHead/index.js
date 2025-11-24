@@ -145,9 +145,9 @@ const HeadToHead = () => {
             {loading?<Spinner animation="border" variant="primary" />:
             (activeTab==="PlayerVsPlayer")?
             <Col>
-                <h1>Player vs Player Stats</h1>
+                <h1 className='text-white'>Player vs Player Stats</h1>
                 <Form onSubmit={handlePlayerVsPlayer}>
-                    <Form.Group>
+                    <Form.Group className='mb-2'>
                         <Form.Select
                         name='player1'
                         value={players.player1}
@@ -157,7 +157,7 @@ const HeadToHead = () => {
                         </Form.Select>
                     </Form.Group>
 
-                    <Form.Group>
+                    <Form.Group className='mb-2'>
                         <Form.Select
                         name='player2'
                         value={players.player2}
@@ -168,7 +168,7 @@ const HeadToHead = () => {
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Match Type</Form.Label>
+                        <Form.Label className='text-white'>Match Type</Form.Label>
                          <Form.Select aria-label="Default select example"
                         name="match_type" 
                         value={players.match_type} 
@@ -184,7 +184,7 @@ const HeadToHead = () => {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                        <Form.Label>Match Limit</Form.Label>
+                        <Form.Label className='text-white'>Match Limit</Form.Label>
                          <Form.Control type="number" placeholder="Match Limit"  
                         name="limit" 
                         value={players.limit} 
@@ -198,7 +198,7 @@ const HeadToHead = () => {
 
                {recievedData?<Card className="text-center">
                     <Card.Header>
-                        <h1>Player vs Player Stats</h1>  
+                        <h1 className='text-white'>Player vs Player Stats</h1>  
                         <h2>{recievedData?.player1info?.player_name} vs {recievedData?.player2info?.player_name}</h2>
                         <h3>{recievedData?.match_type|| recievedData?.limit}</h3>
                         </Card.Header> 
@@ -288,9 +288,9 @@ const HeadToHead = () => {
             </Col>
             :(activeTab==="BatsmanVsBowler")?
             <Col>
-                <h1>Batsman vs Bowler Stats</h1>
+                <h1 className='text-white'>Batsman vs Bowler Stats</h1>
                 <Form onSubmit={handleBatsmanVsBowler}>
-                    <Form.Group>
+                    <Form.Group className='mb-2'>
                         <Form.Select
                         name='player1'
                         value={players?.player1}
@@ -300,7 +300,7 @@ const HeadToHead = () => {
                         </Form.Select>
                     </Form.Group>
 
-                    <Form.Group>
+                    <Form.Group className='mb-2'>
                         <Form.Select
                         name='player2'
                         value={players?.player2}
@@ -312,7 +312,7 @@ const HeadToHead = () => {
 
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Match Type</Form.Label>
+                        <Form.Label className='text-white'>Match Type</Form.Label>
                          <Form.Select aria-label="Default select example"
                         name="match_type" 
                         value={players.match_type} 
@@ -328,7 +328,7 @@ const HeadToHead = () => {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                        <Form.Label>Match Limit</Form.Label>
+                        <Form.Label className='text-white'>Match Limit</Form.Label>
                          <Form.Control type="number" placeholder="Match Limit"
                         name="limit" 
                         value={players.limit} 
@@ -384,9 +384,9 @@ const HeadToHead = () => {
             </Col>:
             (activeTab==="TeamVsTeam")?
             <Col>
-                <h1>Team vs Team Stats</h1>
+                <h1 className='text-white'>Team vs Team Stats</h1>
                 <Form onSubmit={handleTeamVsTeam}>
-                    <Form.Group>
+                    <Form.Group className='mb-2'>
                         <Form.Select
                         name='team1'
                         value={teams.team1}
@@ -396,7 +396,7 @@ const HeadToHead = () => {
                         </Form.Select>
                     </Form.Group>
 
-                    <Form.Group>
+                    <Form.Group className='mb-2'>
                         <Form.Select
                         name='team2'
                         value={teams.team2}
@@ -407,7 +407,7 @@ const HeadToHead = () => {
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label>Match Type</Form.Label>
+                        <Form.Label className='text-white'>Match Type</Form.Label>
                          <Form.Select aria-label="Default select example"
                         name="match_type" 
                         value={teams.match_type} 
@@ -423,7 +423,7 @@ const HeadToHead = () => {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                        <Form.Label>Match Limit</Form.Label>
+                        <Form.Label className='text-white'>Match Limit</Form.Label>
                          <Form.Control type="number" placeholder="Match Limit"
                         name="limit" 
                         value={teams.limit} 
@@ -510,9 +510,9 @@ const HeadToHead = () => {
             </Col>:
             (activeTab==="PlayerVsTeam")?
             <Col>
-                <h1>Player vs Team Stats</h1>
+                <h1 className='text-white'>Player vs Team Stats</h1>
                 <Form onSubmit={handlePlayerVsTeam}>
-                    <Form.Group>
+                    <Form.Group className='mb-2'>
                         <Form.Select
                         name='player'
                         value={playerVsTeam?.player}
@@ -522,7 +522,7 @@ const HeadToHead = () => {
                         </Form.Select>
                     </Form.Group>
 
-                    <Form.Group>
+                    <Form.Group className='mb-2'>
                         <Form.Select
                         name='team'
                         value={playerVsTeam.team}
@@ -533,7 +533,7 @@ const HeadToHead = () => {
                     </Form.Group>
 
                         <Form.Group className="mb-3">
-                        <Form.Label>Match Type</Form.Label>
+                        <Form.Label className='text-white'>Match Type</Form.Label>
                          <Form.Select aria-label="Default select example"
                         name="match_type" 
                         value={playerVsTeam.match_type} 
@@ -549,7 +549,7 @@ const HeadToHead = () => {
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                        <Form.Label>Match Limit</Form.Label>
+                        <Form.Label className='text-white'>Match Limit</Form.Label>
                          <Form.Control type="number" placeholder="Match Limit"
                         name="limit" 
                         value={playerVsTeam.limit} 

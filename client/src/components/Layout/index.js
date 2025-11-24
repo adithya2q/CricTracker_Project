@@ -71,10 +71,10 @@ const Layout = () => {
 
         </Navbar.Collapse>
         
-      </Container>
+      </Container >
     </Navbar >
-    <Container >
-    <Outlet></Outlet>
+    <Container style={{background:"url('https://png.pngtree.com/background/20250103/original/pngtree-a-large-cricket-stadium-green-field-empty-picture-image_15985507.jpg')", backgroundRepeat:'no-repeat',backgroundPosition:'fixed',backgroundAttachment:'fixed',minHeight:'100vh',top:0,left:0,backgroundSize:'cover', width:'100%'}}   >
+    <Outlet ></Outlet>
     </Container>
     </div>
   )

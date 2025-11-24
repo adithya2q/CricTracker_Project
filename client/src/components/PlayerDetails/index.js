@@ -45,7 +45,7 @@ useEffect(()=>{
     <div>
       {loading?<Spinner animation="border" variant="primary" />:
             <>
-        <h1>Player Details</h1>
+        <h1 className='text-white'>Player Details</h1>
         <Row>
             <Col md={4} lg={4}>
                 <img src={player.player_image} alt="" className='w-100' style={{objectFit:'cover', height:'300px'}} />
@@ -68,8 +68,8 @@ useEffect(()=>{
             </Col>
          {player.player_statistics?(
             <Col md={8} lg={8}>
-            <h2>Batting Statistics</h2>
-             <Table>
+            <h2 className='text-white'>Batting Statistics</h2>
+             <Table className='players-table'>
                 <thead>
         <tr>
           <th>Format</th>
@@ -107,8 +107,8 @@ useEffect(()=>{
         ))}
       </tbody>
             </Table>
-            <h2>Bowling & Fielding Statistics</h2>
-         <Table>
+            <h2 className='text-white'>Bowling & Fielding Statistics</h2>
+         <Table className='players-table'>
                 <thead>
         <tr>
           <th>Format</th>

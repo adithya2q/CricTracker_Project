@@ -8,6 +8,7 @@ const DismissalModel = require("../Models/DismissalModel");
 const { path } = require("../Models/ExtrasSchema");
 const PlayerModel = require("../Models/PlayerModel");
 const Playing11Model = require("../Models/Playing11Model");
+const {io}=require('../server');
 
 module.exports={
 updateCommentary:async(req,res)=>{
@@ -349,7 +350,10 @@ updateCommentary:async(req,res)=>{
             await Striker.save({session});
             await NonStriker.save({session});
             await Bowler.save({session});
-
+            
+            io.to(id).emit('score_update',{
+                message: `Score updated for match `
+            });
             await session.commitTransaction();
             session.endSession();
             return res.status(200).json({

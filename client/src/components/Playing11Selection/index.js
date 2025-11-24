@@ -120,7 +120,7 @@ const Playing11Selection = () => {
                     <ListGroup.Item
                     key={player._id}
                     className="d-flex justify-content-between align-items-center">
-                          <span><Card.Img style={{width:"10rem", height:'10rem', objectFit:'cover'}} className="img-fluid passport-photo" variant="top" src={player.player_image}  /> <strong>{player.player_name}</strong>
+                          <span><Card.Img style={{width:"5rem", height:'5rem', objectFit:'cover'}} className="img-fluid passport-photo" variant="top" src={player.player_image}  /> <strong>{player.player_name}</strong>
                           </span> <span>{player.player_role}</span>
                           <Button variant="success" size="sm" onClick={()=>addToPlaying11(player)}>Add</Button></ListGroup.Item>
                         ))}
@@ -139,7 +139,7 @@ const Playing11Selection = () => {
                     <ListGroup.Item
                     key={player._id}
                     className="d-flex justify-content-between align-items-center">
-                     <span><Card.Img style={{width:"10rem", height:'10rem', objectFit:'cover'}} className="img-fluid passport-photo" variant="top" src={player.player_image}/> <strong>{player.player_name}</strong>
+                     <span><Card.Img style={{width:"5rem", height:'5rem', objectFit:'cover'}} className="img-fluid passport-photo" variant="top" src={player.player_image}/> <strong>{player.player_name}</strong>
                           </span> <span>{player.player_role}</span>
                           <Button variant="danger" size="sm" onClick={()=>removeFromPlaying11(player)}>Remove</Button></ListGroup.Item>
                         ))}

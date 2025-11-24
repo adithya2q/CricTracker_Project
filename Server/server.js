@@ -17,7 +17,25 @@ app.get('/', (req, res) => {
   res.status(200).send('CricTracker Pro website is running');
 });
 
+const server=require('http').createServer(app);
+const io=require('socket.io')(server);
+
+io.on('connection',socket=>{
+    console.log('Client is connected');
+
+    socket.on('joinRoom',matchId=>{
+        socket.join(matchId);
+    })
+
+    socket.on('disconnect',()=>{
+        console.log('Client is disconnected');
+    })
+})
+
+
 const PORT=process.env.PORT;
-app.listen(PORT,()=>{
+server.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`)
 });
+
+module.exports={io}

@@ -16,8 +16,6 @@ app.use(cors({
 dbconfig=require('./dbconfig/index.js');
 const router=require('./routes.js');
 
-app.use('',router);
-
 app.get('/', (req, res) => {
   res.status(200).send('CricTracker Pro website is running');
 });
@@ -37,10 +35,11 @@ io.on('connection',socket=>{
     })
 })
 
+app.use('',router(io));
+
 
 const PORT=process.env.PORT;
 server.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`)
 });
 
-module.exports={io}

@@ -55,7 +55,7 @@ updateCommentary:async(req,res)=>{
         })
         }
     },
-    updateMatchScore:async(req,res)=>{
+    updateMatchScore:async(req,res,io)=>{
         const session = await mongoose.startSession();
         session.startTransaction();
         try {

@@ -8,7 +8,7 @@ const { authRoles }= require('./Middleware/authRoles');
 const router=require('express').Router()
 
 
-
+module.exports=(io)=>{
 
 router.post('/login',login);
 router.post('/user/register',UserRegister);
@@ -29,7 +29,7 @@ router.patch('/match/:id/updateinfo',authMiddleware,authRoles('admin','scorer'),
 router.post('/match/:id/scorecared/complete',authMiddleware,authRoles('admin','scorer'),matchScorecardComplete);
 router.post('/match/:matchId/complete',authMiddleware,authRoles('admin','scorer'),matchCompleted);
 router.patch('/match/:id/updatecommentary',authMiddleware,authRoles('admin','scorer'),updateCommentary);
-router.patch('/match/:id/updatescore',authMiddleware,authRoles('admin','scorer'),updateMatchScore);
+router.patch('/match/:id/updatescore',authMiddleware,authRoles('admin','scorer'),(req,res)=>{return updateMatchScore(req,res,io)});
 router.post('/match/:id/switchinnings',authMiddleware,authRoles('admin','scorer'),switchInnings);
 router.post('/match/:id/uploadchat',authMiddleware,authRoles('viewer', 'admin', 'teamManager', 'scorer'),updateChat);
 router.get('/match/:id/chat',authMiddleware,authRoles('viewer', 'admin', 'teamManager', 'scorer'),getChat);
@@ -39,8 +39,8 @@ router.get('/get/PvsP',authMiddleware,authRoles( 'admin', 'teamManager'),getPlay
 router.get('/get/BvsB',authMiddleware,authRoles( 'admin', 'teamManager'),getBatsmanVsBowlerPerformance);
 router.get('/get/TvsT',authMiddleware,authRoles( 'admin', 'teamManager'),getTeamVsTeamPerformance);
 router.get('/get/playerVsTeam',authMiddleware,authRoles( 'admin', 'teamManager'),getPlayerVsTeamPerformance);
-
+    return router
+}
 
 
  
-module.exports=router;

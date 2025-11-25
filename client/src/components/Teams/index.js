@@ -32,9 +32,9 @@ const Teams = () => {
          <Button variant='success'><Nav.Link as={NavLink} to='/team/register'  style={{color:'white'}}>Register Team</Nav.Link></Button>   
         </Nav.Item>
         {loading?<Spinner animation="border" variant="primary" />:
-        teams.length===0?(<h2>No Teams</h2>):
+        teams.length===0?(<h2 className='text-white text-center'>No Teams</h2>):
         (<>
-        <h1>Teams</h1>
+        <h1 className='text-white'>Teams</h1>
         <Row>
         {teams.map(team=>(
             <Col lg={4} md={6}>

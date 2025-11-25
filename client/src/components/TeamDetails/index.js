@@ -30,24 +30,24 @@ useEffect(()=>{
     return (
         <div>
             {loading?<Spinner animation="border" variant="primary" />:
-            !team?<h2>Team not found</h2>:
+            !team?<h2 className='text-white text-center'>Team not found</h2>:
             <>
             <Row>
-                <Col>
+                <Col >
                 <Image src={team.team_logo} style={{height:'280px'}} />
                 </Col>
                 <Col>      
-            <h1>{team?.team_name}</h1>
-            <p>{team?.team_description}</p>
-            <p>Team trophies:{team?.team_trophies_won}</p>
-            <p>Team manager:{team?.team_manager?.name}</p>
-            <p>Team Captain:{team?.team_captain?.name}</p>
+            <h1 className='text-white'>{team?.team_name}</h1>
+            <p className='text-white'>{team?.team_description}</p>
+            <p className='text-white'>Team trophies:{team?.team_trophies_won}</p>
+            <p className='text-white'>Team manager:{team?.team_manager?.name}</p>
+            <p className='text-white'>Team Captain:{team?.team_captain?.name}</p>
             </Col>
             </Row>
             <div>
-                <h2>Players</h2>
+                <h2 className='text-white text-center'>Players</h2>
                     <ListGroup>
-                    {team?.team_players.map(player=>(
+                    {team?.team_players?.map(player=>(
                         <ListGroup.Item key={player._id}>{player.player_name}</ListGroup.Item>
                         ))}
 

@@ -5,7 +5,12 @@ require('dotenv').config();
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-app.use(cors());
+app.use(cors({
+    origin: 'https://cric-tracker-project-frontend.vercel.app',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], 
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-custom-header'], 
+    credentials: true
+}));
 
 
 dbconfig=require('./dbconfig/index.js');

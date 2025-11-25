@@ -80,8 +80,8 @@ const TeamRegister = () => {
 
   return (
     <div>
-         <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3">
+         <Form onSubmit={handleSubmit} className='text-white'>
+            <Form.Group className="mb-3 text-white" >
                 <Form.Label>Team Name</Form.Label>
                 <Form.Control type="text"
                 name="team_name" 

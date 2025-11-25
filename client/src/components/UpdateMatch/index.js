@@ -139,7 +139,7 @@
 
         const handleWicket=(e)=>{
           setShowwicketForm(!showwicketForm);
-          setBalldata((balldata)=>({...balldata,wicket:!balldata.wicket}));
+          setBalldata((balldata)=>({...balldata,wicket:!balldata.wicket})); 
         }
 
         const handleScoreUpdateSubmit=async(e)=>{
@@ -214,17 +214,14 @@
             <Nav.Item>
               <Nav.Link eventKey="update_commentary">Update Commentary</Nav.Link>
             </Nav.Item>
-            <Nav.Item>
-              <Nav.Link eventKey="match_complete">Match Complete</Nav.Link>
-            </Nav.Item>
         </Nav>
         {loading?(<div className='d-flex text-center align-items-center justify-content-center'>
             <Spinner animation="border" variant="primary" /></div>):(
                 <>
         {activeTab==='update_info' && (
             <>
-            <h1>Update Info</h1>
-            <Form onSubmit={handleInfoSubmit}>
+            <h1 className='text-center text-white'>Update Info</h1>
+            <Form onSubmit={handleInfoSubmit} className='text-white'>
             <Form.Group>
               <Form.Label>Toss winner</Form.Label>
               <Form.Select
@@ -250,10 +247,6 @@
               </Form.Group>
 
 
-
-                {matchinfo.status === 'completed' && (
-                  <MatchComplete matchId={id} />
-                )}
               <div className="text-center">
               <Button type="submit" variant="primary" disabled={loading}>
                 {loading ? <Spinner animation="border" size="sm" /> : "Update Details"}
@@ -267,9 +260,9 @@
 
         {activeTab==='update_scorecard' &&matchStatus!=='upcoming' && matchcomplete===false && (
             <>
-            <h1>Update Scorecard</h1>
-            <h2>{teamA?.team_id?.team_name} batting & {teamB?.team_id?.team_name} bowling</h2>
-                    <Form onSubmit={handleScoreUpdateSubmit}>
+            <h1 className='text-center text-white'>Update Scorecard</h1>
+            <h2 className='text-white'>{teamA?.team_id?.team_name} batting & {teamB?.team_id?.team_name} bowling</h2>
+                    <Form onSubmit={handleScoreUpdateSubmit} className='text-white'>
 
             
               <Form.Group>
@@ -421,10 +414,6 @@
 
 
 
-
-
-
-
             <div className="text-center mt-3">
               <Button type="submit" variant="success" disabled={loading}>
                 {loading ? (
@@ -455,8 +444,8 @@
             </>)}
 
         {activeTab==='update_commentary' && (<>
-        <h1>Update Commentary</h1>
-        <Form onSubmit={handleCommentarySubmit}>
+        <h1 className='text-center text-white'>Update Commentary</h1>
+        <Form onSubmit={handleCommentarySubmit} className='text-white'>
           <Form.Group>
               <Form.Label>Overs</Form.Label>
                 <Form.Control

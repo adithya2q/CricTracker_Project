@@ -74,6 +74,10 @@ const MatchSchema=mongoose.Schema({
         commentary:{type:String},
         runs:{type:Number}
     }],
+    isScorecardComplete:{
+        type:Boolean,
+        default:false
+    },
     chat:{
         user:{
             type:mongoose.Schema.Types.ObjectId,

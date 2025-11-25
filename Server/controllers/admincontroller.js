@@ -416,7 +416,7 @@ module.exports={
             }
          }
          
-            if (updatedFields.status)               findMatch.status = updatedFields.status;
+            if (updatedFields.status)               findMatch.match_status = updatedFields.status;
             if (updatedFields.tossWinner)           findMatch.tossWinner = updatedFields.tossWinner;
             if (updatedFields.tossDecision)         findMatch.tossDecision = updatedFields.tossDecision;
             if (updatedFields.battingFirstTeam)     findMatch.battingFirstTeam = updatedFields.battingFirstTeam;
@@ -473,7 +473,13 @@ module.exports={
                     message:"Match not found"
                 });
             }
-
+        if(match.match_status==='completed'){
+            return res.status(400).json({
+                success:false,
+                status:400,
+                message:"Match already completed"
+            })
+        }
         if(!matchWinner || !result || !points || !matchOutcome){
             return res.status(400).json({
                 success:false,
@@ -484,6 +490,7 @@ module.exports={
         const updatedFields={};
         if(matchWinner)updatedFields.matchWinner=matchWinner;
         if(result)updatedFields.result=result;
+        updatedFields.match_status='completed';
         const loosingTeamId=matchWinner.toString()===match.team1.toString()?match.team2:match.team1;
         const matchType=match.match_type;
         const matchWinner_teaminfo=await TeamModel.findById(matchWinner).session(session);

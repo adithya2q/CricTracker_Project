@@ -90,15 +90,15 @@ const handleChatSubmit=async(e)=>{
         <Nav.Item>
           <Nav.Link eventKey="chat">Chat</Nav.Link>
         </Nav.Item>
+        {match?.isScorecardComplete&& match?.match_status!=='completed'&& (role==="admin"|| role==="scorer") &&(
          <Nav.Item>
             <Nav.Link eventKey="match_complete">Match Complete</Nav.Link>
           </Nav.Item>
-        {role==="scorer" && (
-          <>
+          )}
+        {(role==="scorer" || role==="admin" )&& (
         <Nav.Item>
           <Nav.Link as={NavLink} to={`/matches/match/${id}/update`}>Update Match Settings</Nav.Link>
         </Nav.Item>
-          </>
         )}
       </Nav>
       {loading?<Spinner animation="border" />:

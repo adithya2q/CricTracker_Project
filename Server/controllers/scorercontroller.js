@@ -508,7 +508,6 @@ matchScorecardComplete:async(req,res)=>{
                 message:'Match not found',
             })
         }
-        match.status='completed';
         const team1 = await Playing11Model.findById(match.playingXI_team1).session(session);
         const team2 = await Playing11Model.findById(match.playingXI_team2).session(session);
         const allPlayers = [...team1.players, ...team2.players];
@@ -679,6 +678,8 @@ matchScorecardComplete:async(req,res)=>{
             await innings.save({session});
             
         }
+        match.isScorecardComplete=true;
+        await match.save({session});
         await session.commitTransaction();
         session.endSession();
         return res.status(200).json({

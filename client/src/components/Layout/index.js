@@ -33,21 +33,21 @@ const Layout = () => {
     navigate("/login")
 }
    return (
-    <div >
+    <div className='text-white'>
 
       <Navbar bg='success' expand="lg" >
       <h1>CricTrackerPro</h1>
       <Container>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Collapse id="basic-navbar-nav ">
           <Nav className="me-auto">
-            <Nav.Link as={NavLink} to='/'>Home</Nav.Link>
-            <Nav.Link as={NavLink} to='/matches'>Match Center</Nav.Link>
-            <Nav.Link as={NavLink} to='/tournaments'>Tournaments</Nav.Link>
-            <Nav.Link as={NavLink} to='/teams' >Teams</Nav.Link>
-            <Nav.Link as={NavLink} to='/players' >Players</Nav.Link>
+            <Nav.Link as={NavLink} to='/' className='text-white'>Home</Nav.Link>
+            <Nav.Link as={NavLink} to='/matches' className='text-white'>Match Center</Nav.Link>
+            <Nav.Link as={NavLink} to='/tournaments' className='text-white'>Tournaments</Nav.Link>
+            <Nav.Link as={NavLink} to='/teams' className='text-white'>Teams</Nav.Link>
+            <Nav.Link as={NavLink} to='/players' className='text-white'>Players</Nav.Link>
             {role==='teamManager'&&
-            <Nav.Link as={NavLink} to='/reportsAndManagement'>Reports and Management</Nav.Link>}
+            <Nav.Link as={NavLink} to='/reportsAndManagement' className='text-white'>Reports and Management</Nav.Link>}
 
                     
           </Nav>   

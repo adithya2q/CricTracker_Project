@@ -68,8 +68,8 @@ const CreateMatch = () => {
 
 
   return (
-    <div>
-        <h1>Create Match</h1>
+    <div className='text-white'>
+        <h1 className='text-center'>Create Match</h1>
          <Form onSubmit={handleSubmit}>
          <Form.Group >
           <Form.Label>Match Category</Form.Label>

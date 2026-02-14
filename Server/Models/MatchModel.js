@@ -82,7 +82,6 @@ const MatchSchema=mongoose.Schema({
         user:{
             type:mongoose.Schema.Types.ObjectId,
             ref:'Viewer',
-            required:true
         },
         message:{
             type:String
@@ -101,6 +100,10 @@ const MatchSchema=mongoose.Schema({
         ref: 'Innings',
         default: null
 },
+isDeleted:{
+    type:Boolean,
+    default:false
+}
 
 },{
     timestamps:true

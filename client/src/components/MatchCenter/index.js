@@ -30,7 +30,7 @@ const MatchCenter= () => {
 
 
     const filteredMatches = matches.filter(
-  (match) => match.status.toLowerCase() === activeTab
+  (match) => match.match_status.toLowerCase() === activeTab
 );
 
   return (

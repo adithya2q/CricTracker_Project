@@ -56,10 +56,9 @@ module.exports={
                 message: "Teams cannot be the same"
             });
             }
-
             const match=new MatchModel({team1:team1._id,team2:team2._id,match_type,match_category,tournament:tournament1._id,venue,date,status:'upcoming'});
             await match.save();
-            tournament1.matches.push(match._id);
+            tournament1.tournament_matches.push(match._id);
             if(tournament1.tournament_status==='upcoming') tournament1.tournament_status='live';
             await tournament1.save();
             return res.status(201).json({
@@ -68,7 +67,6 @@ module.exports={
                 message:"Match added successfully",
                 data:match
             });
-
         }
         catch(error){
             console.log(error);

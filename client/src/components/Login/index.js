@@ -43,9 +43,9 @@ const LoginPage = () => {
             const response=await userLogin({email,password,role});
             if(response&&response.success){
                 localStorage.setItem('token',response.token);
-                 localStorage.setItem('loggedInId',response.data._id);
-                 if(response.data.team_id){
-                   localStorage.setItem('team_id',response.data.team_id);
+                localStorage.setItem('loggedInId',response.data._id);
+                if(response.data.team_id){
+                  localStorage.setItem('team_id',response.data.team_id);
                  }
                 navigate('/');
             }

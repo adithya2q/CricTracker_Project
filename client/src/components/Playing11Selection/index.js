@@ -15,7 +15,6 @@ const Playing11Selection = () => {
         captain:'',
         viceCaptain:'',
         wicketKeeper:'',
-
     });
 
     useEffect(()=>{
